@@ -117,9 +117,12 @@ var processGroup = function(type, group, callback) {
       seq(function() {
         var content = joinFiles(filesList);
         var ast = uglify.parser.parse(content);
-        ast = uglify.uglify.ast_mangle(ast);
-        ast = uglify.uglify.ast_squeeze(ast);
-        var data = uglify.uglify.gen_code(ast);
+        if (!/Cufon\.registerFont/.test(content)) {
+          // We skip mangling for Cufon as it doesn't like it.
+          ast = uglify.uglify.ast_mangle(ast);
+          ast = uglify.uglify.ast_squeeze(ast);
+        }
+        var data = uglify.uglify.gen_code(ast, { beautify: true, indent_level: 0 });
         
         fs.writeFile(groupPath, data, 'utf-8', this);
       }).
