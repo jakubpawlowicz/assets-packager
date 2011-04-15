@@ -1,0 +1,24 @@
+{
+  "name": "assets-packager",
+  "author": "Jakub Pawlowicz <jakub@goalsmashers.com> (http://twitter.com/GoalSmashers)",
+  "description": "Very fast assets packager - combines power of seq, uglify-js, gzip, assets-expander, clean-css and couple other tools to build assets insanely fast",
+  "keywords": ["assets", "packager", "css", "javascript", "less", "minifier"],
+  "homepage": "http://github.com/GoalSmashers/assets-packager",
+  "repository": {
+    "type" : "git",
+    "url" : "http://github.com/GoalSmashers/assets-packager.git"
+  },
+  "version": "0.1.0",
+  "main": "index.js",
+  "bin": {
+    "cleancss": "./bin/assetspkg"
+  },
+  "dependencies": {
+    "optimist": "0.1.x",
+    "seq": "0.2.x",
+    "uglify-js": "1.x",
+    "clean-css": "0.2.x",
+    "enhance-css": "0.2.x",
+    "assets-expander": "0.2.x"
+  }
+}

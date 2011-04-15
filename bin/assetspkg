@@ -1,0 +1,135 @@
+#!/usr/bin/env node
+
+var fs = require('fs'),
+  path = require('path'),
+  sys = require('sys'),
+  uglify = require('uglify-js'),
+  Seq = require('seq'),
+  exec = require('child_process').exec,
+  cleanCSS = require('clean-css'),
+  EnhanceCSS = require('enhance-css'),
+  AssetsExpander = require('assets-expander');
+
+// Init optimist arguments parsing
+var options = {
+  root: 'public',
+  config: 'config/assets.yml'
+};
+
+var argv = require('optimist').default(options).argv;
+options.root = path.join(process.cwd(), options.root);
+options.config = path.join(process.cwd(), options.config);
+
+if (!path.existsSync(options.config)) {
+  sys.puts('Configuration file "' + options.config + '"is missing!')
+  process.exit(1);
+}
+
+var expander = new AssetsExpander(options.config, { root: options.root }),
+  extensions = { stylesheets: 'css', javascripts: 'js' };
+
+// Packaging action
+Seq.ap(expander.allTypes()).
+  seqEach(function(type) {
+    // First compile Less to CSS
+    if (type == 'stylesheets') {
+      compileLessToCss(type, this);
+    } else {
+      this(null);
+    }
+  }).
+  seqEach(function(type) {
+    // Then process all files
+    var self = this;
+    sys.puts("Processing type '" + type + "'...");
+
+    Seq.ap(expander.groupsFor(type)).
+      parEach(4, function(groupName) {
+        processGroup(type, groupName, this);
+      }).
+      seq('type', self, null)
+  });
+
+// HELPER METHODS
+
+// Joins files from 'list' into one
+var joinFiles = function(list) {
+  var content = '';
+  list.forEach(function(fileName) {
+    content += fs.readFileSync(fileName, 'utf-8');
+  })
+  return content;
+};
+
+// Compiles LESS files to CSS
+var compileLessToCss = function(type, callback) {
+  var filesList = expander.processList(type + '/**/*', { type: 'less', root: options.root });
+  sys.puts("Compiling " + filesList.length + " Less file(s) to CSS...");
+  
+  Seq.ap(filesList).
+    parEach(function(pathToLessFile) {
+      sys.puts("  Compiling '" + path.basename(pathToLessFile) + "'...");
+      exec('lessc ' + pathToLessFile + ' > ' + pathToLessFile.replace('.less', '.css'), this);
+    }).
+    seq('less', function() {
+      callback.call();
+    });
+};
+
+// Processes group of files, outputting bundled & gzipped files
+var processGroup = function(type, group, callback) {
+  var filesList = expander.processGroup(type, group, { type: extensions[type] }),
+    groupPath = path.join(options.root, type, 'bundled', group) + '.' + extensions[type],
+    groupDir = path.dirname(groupPath);
+  
+  if (type == 'stylesheets') {
+    Seq().
+      seq(function() {
+        exec('mkdir -p ' + groupDir, this);
+      }).
+      seq(function() {
+        var data = joinFiles(filesList);
+        var cleaned = cleanCSS.process(data);
+        new EnhanceCSS({ rootPath: options.root, pregzip: true, noEmbedVersion: true }).process(cleaned, this);
+      }).
+      par(function(data) {
+        fs.writeFile(groupPath, data.embedded.plain, 'utf-8', this);
+      }).
+      par(function(data) {
+        fs.writeFile(groupPath + '.gz', data.embedded.compressed, 'utf-8', this);
+      }).
+      par(function(data) {
+        fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]), data.notEmbedded.plain, 'utf-8', this);
+      }).
+      par(function(data) {
+        fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]) + '.gz', data.notEmbedded.compressed, 'utf-8', this);
+      }).
+      seq(function() {
+        sys.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");
+        this(null);
+      }).
+      seq('css', callback);
+  } else {
+    Seq().
+      seq(function() {
+        exec('mkdir -p ' + groupDir, this);
+      }).
+      seq(function() {
+        var content = joinFiles(filesList);
+        var ast = uglify.parser.parse(content);
+        ast = uglify.uglify.ast_mangle(ast);
+        ast = uglify.uglify.ast_squeeze(ast);
+        var data = uglify.uglify.gen_code(ast);
+        
+        fs.writeFile(groupPath, data, 'utf-8', this);
+      }).
+      seq(function() {
+        exec('gzip -c6 ' + groupPath + ' > ' + groupPath + '.gz', this);
+      }).
+      seq(function() {
+        sys.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");
+        this(null);
+      }).
+      seq('js', callback)
+  }
+};
