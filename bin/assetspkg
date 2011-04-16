@@ -16,15 +16,42 @@ var options = {
   config: 'config/assets.yml'
 };
 
-var argv = require('optimist').default(options).argv;
-options.root = path.join(process.cwd(), options.root);
-options.config = path.join(process.cwd(), options.config);
+var argv = require('optimist').argv;
 
-if (!path.existsSync(options.config)) {
-  sys.puts('Configuration file "' + options.config + '"is missing!')
-  process.exit(1);
+options.root = path.join(process.cwd(), argv.r || argv.root || options.root);
+options.config = path.join(process.cwd(), argv.c || argv.config || options.config);
+
+// Usage
+if (argv.h || argv.help) {
+  sys.puts("usage: assetspkg [options]\n");
+  sys.puts("options:");
+  sys.puts("  -c, --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
+  sys.puts("  -r, --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
+  sys.puts("  -h, --help\t\tYou are staring at it!");
+  sys.puts("  -v, --version\t\tAssets Packager version.");
+  process.exit(0);
 }
 
+// Version
+if (argv.v || argv.version) {
+  var packageConfig = fs.readFileSync(path.join(path.dirname(process.argv[1]), '../package.json'));
+  sys.puts(JSON.parse(packageConfig).version);
+  process.exit(0);
+}
+
+// Invalid config
+if (!path.existsSync(options.config)) {
+  process.stderr.write('Configuration file "' + options.config + '" is missing!\n');
+  process.exit(0);
+}
+
+// Invalid root path
+if (!path.existsSync(options.root)) {
+  process.stderr.write('Root path "' + options.root + '" could not be found!\n');
+  process.exit(0);
+}
+
+// Configuration seems to be fine. Proceed with packaging!
 var expander = new AssetsExpander(options.config, { root: options.root }),
   extensions = { stylesheets: 'css', javascripts: 'js' };
 
