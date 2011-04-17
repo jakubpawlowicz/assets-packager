@@ -14,6 +14,22 @@ var fullPath = function(suffix) {
   return path.join(process.cwd(), suffix);
 };
 
+var cleanBundles = function(set) {
+  exec('rm -rf ' + fullPath('test/data/' + set + '/public/javascripts/bundled'));
+  exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/bundled'));
+  exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/*.css'));
+};
+
+assert.hasFile = function(set, type, name) {
+  assert.isTrue(path.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
+};
+assert.hasBundledFile = function(set, type, name) {
+  assert.isTrue(path.existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
+};
+assert.notHasBundledFile = function(set, type, name) {
+  assert.isFalse(path.existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
+};
+
 exports.commandsSuite = vows.describe('binary commands').addBatch({
   'no options': {
     topic: withOptions(),
@@ -93,29 +109,31 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       assert.isNull(error);
     },
     'should compile css to less': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/one.css')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/two.css')));
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
     },
     'should bundle css into packages': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/subset.css')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/all.css')));
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
     },
-    'should bundle css into compressed packages': function() {
-      assert.isFalse(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/subset.css.gz')));
-      assert.isFalse(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/all.css.gz')));
+    'should not bundle css into compressed packages': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset.css.gz');
+      assert.notHasBundledFile('test1', 'stylesheets', 'all.css.gz');
+    },
+    'should not bundle css into compressed packages without embedded content': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset-noembed.css.gz');
+      assert.notHasBundledFile('test1', 'stylesheets', 'all-noembed.css.gz');
     },
     'should bundle js into packages': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/subset.js')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/all.js')));
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js');
     },
-    'should bundle js into compressed packages': function() {
-      assert.isFalse(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/subset.js.gz')));
-      assert.isFalse(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/all.js.gz')));
+    'should not bundle js into compressed packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js.gz');
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js.gz');
     },
     teardown: function() {
-      exec('rm -rf ' + fullPath('test/data/test1/public/javascripts/bundled'));
-      exec('rm -rf ' + fullPath('test/data/test1/public/stylesheets/bundled'));
-      exec('rm -rf ' + fullPath('test/data/test1/public/stylesheets/*.css'));
+      cleanBundles('test1');
     }
   }
 }).addBatch({
@@ -125,29 +143,65 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       assert.isNull(error);
     },
     'should compile css to less': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/one.css')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/two.css')));
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
     },
     'should bundle css into packages': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/subset.css')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/all.css')));
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
     },
     'should bundle css into compressed packages': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/subset.css.gz')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/stylesheets/bundled/all.css.gz')));
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css.gz');
+    },
+    'should not bundle css into compressed packages without embedded content': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset-noembed.css.gz');
+      assert.notHasBundledFile('test1', 'stylesheets', 'all-noembed.css.gz');
     },
     'should bundle js into packages': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/subset.js')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/all.js')));
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js');
     },
     'should bundle js into compressed packages': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/subset.js.gz')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test1/public/javascripts/bundled/all.js.gz')));
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js.gz');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
     },
     teardown: function() {
-      exec('rm -rf ' + fullPath('test/data/test1/public/javascripts/bundled'));
-      exec('rm -rf ' + fullPath('test/data/test1/public/stylesheets/bundled'));
-      exec('rm -rf ' + fullPath('test/data/test1/public/stylesheets/*.css'));
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'packaging with gzipped and "no embed" versions': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should compile css to less': function() {
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
+    },
+    'should bundle css into packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
+    },
+    'should bundle css into compressed packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css.gz');
+    },
+    'should bundle css into compressed packages without embedded content': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset-noembed.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-noembed.css.gz');
+    },
+    'should bundle js into packages': function() {
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js');
+    },
+    'should bundle js into compressed packages': function() {
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js.gz');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
+    },
+    teardown: function() {
+      cleanBundles('test1');
     }
   }
 });

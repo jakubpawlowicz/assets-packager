@@ -14,7 +14,8 @@ var fs = require('fs'),
 var options = {
   root: 'public',
   config: 'config/assets.yml',
-  gzip: false
+  gzip: false,
+  noEmbedVersion: false
 };
 
 var argv = require('optimist').argv;
@@ -22,6 +23,7 @@ var argv = require('optimist').argv;
 options.root = path.join(process.cwd(), argv.r || argv.root || options.root);
 options.config = path.join(process.cwd(), argv.c || argv.config || options.config);
 options.gzip = argv.g || argv.gzip || options.gzip;
+options.noEmbedVersion = argv.n || argv.noembedversion || options.noEmbedVersion;
 
 // Usage
 if (argv.h || argv.help) {
@@ -30,6 +32,7 @@ if (argv.h || argv.help) {
   sys.puts("  -c, --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
   sys.puts("  -r, --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
   sys.puts("  -g, --gzip\t\Gzip packaged files (defaults to false).");
+  sys.puts("  -n, --noembedversion\t\Produce a version of packaged CSS without embedded images (defaults to false).");
   sys.puts("  -h, --help\t\tYou are staring at it!");
   sys.puts("  -v, --version\t\tAssets Packager version.");
   process.exit(0);
@@ -120,21 +123,23 @@ var processGroup = function(type, group, callback) {
       seq(function() {
         var data = joinFiles(filesList);
         var cleaned = cleanCSS.process(data);
-        new EnhanceCSS({ rootPath: options.root, pregzip: true, noEmbedVersion: true }).process(cleaned, this);
+        new EnhanceCSS({ rootPath: options.root, pregzip: true, noEmbedVersion: options.noEmbedVersion }).process(cleaned, this);
       }).
-      par(function(data) {
+      par(function(data) { // plain file
         fs.writeFile(groupPath, data.embedded.plain, 'utf-8', this);
       }).
-      par(function(data) {
+      par(function(data) { // compressed plain file
         if (!options.gzip) return this(null);
         
         fs.writeFile(groupPath + '.gz', data.embedded.compressed, 'utf-8', this);
       }).
-      par(function(data) {
+      par(function(data) { // not-embedded version
+        if (!options.noEmbedVersion) return this(null);
+        
         fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]), data.notEmbedded.plain, 'utf-8', this);
       }).
-      par(function(data) {
-        if (!options.gzip) return this(null);
+      par(function(data) { // not-embedded, gzipped version
+        if (!options.gzip || !options.noEmbedVersion) return this(null);
 
         fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]) + '.gz', data.notEmbedded.compressed, 'utf-8', this);
       }).
