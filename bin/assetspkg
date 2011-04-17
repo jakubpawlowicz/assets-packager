@@ -16,7 +16,8 @@ var options = {
   config: 'config/assets.yml',
   gzip: false,
   noEmbedVersion: false,
-  only: undefined
+  only: undefined,
+  assetHosts: undefined
 };
 
 var argv = require('optimist').argv;
@@ -39,6 +40,7 @@ if (options.only) {
     hasJS: /\.js[,]?/.test(options.only)
   };
 }
+options.assetHosts = argv.a || argv.assethosts || options.assetHosts;
 
 // Usage
 if (argv.h || argv.help) {
@@ -48,6 +50,7 @@ if (argv.h || argv.help) {
   sys.puts("  -r, --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
   sys.puts("  -g, --gzip\t\tGzip packaged files (defaults to false).");
   sys.puts("  -n, --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
+  sys.puts("  -a, --assethosts\tAssets host to use in CSS bundles (defaults to none).");
   sys.puts("  -o, --only\t\tPackage only given assets group (or groups if separated by comma).");
   sys.puts("  -h, --help\t\tYou are staring at it!");
   sys.puts("  -v, --version\t\tAssets Packager version.");
@@ -144,7 +147,7 @@ var processGroup = function(type, group, callback) {
       seq(function() {
         var data = joinFiles(filesList);
         var cleaned = cleanCSS.process(data);
-        new EnhanceCSS({ rootPath: options.root, pregzip: true, noEmbedVersion: options.noEmbedVersion }).process(cleaned, this);
+        new EnhanceCSS({ rootPath: options.root, pregzip: true, noEmbedVersion: options.noEmbedVersion, assetHosts: options.assetHosts }).process(cleaned, this);
       }).
       par(function(data) { // plain file
         fs.writeFile(groupPath, data.embedded.plain, 'utf-8', this);

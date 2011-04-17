@@ -346,3 +346,64 @@ exports.Suite = vows.describe('packaging all').addBatch({
     }
   }
 });
+
+exports.assetsHosts = vows.describe('assets hosts').addBatch({
+  'no asset hosts': {
+    topic: withOptions('-r data/test2/public -c data/test2/assets.yml'),
+    'in plain file': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all.css'), 'utf-8', this.callback);
+      },
+      'first file png': function(error, data) {
+        assert.include(data, 'one.png');
+      },
+      'second file png': function(error, data) {
+        assert.include(data, 'two.png');
+      },
+      'should not add assets hosts': function(error, data) {
+        assert.include(data, "url(/images/one.png");
+        assert.include(data, "url(/images/two.png");
+      }
+    },
+    teardown: function() {
+      cleanBundles('test2');
+    }
+  }
+}).addBatch({
+  'asset hosts': {
+    topic: withOptions('-r data/test2/public -c data/test2/assets.yml -n -a assets[0,1].example.com'),
+    'in plain file': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all.css'), 'utf-8', this.callback);
+      },
+      'first file png': function(error, data) {
+        assert.include(data, 'one.png');
+      },
+      'second file png': function(error, data) {
+        assert.include(data, 'two.png');
+      },
+      'should add assets hosts': function(error, data) {
+        assert.include(data, "url(//assets0.example.com/images/one.png");
+        assert.include(data, "url(//assets1.example.com/images/two.png");
+      }
+    },
+    'in noembed file': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all-noembed.css'), 'utf-8', this.callback);
+      },
+      'first file png': function(error, data) {
+        assert.include(data, 'one.png');
+      },
+      'second file png': function(error, data) {
+        assert.include(data, 'two.png');
+      },
+      'should add assets hosts': function(error, data) {
+        assert.include(data, "url(//assets0.example.com/images/one.png");
+        assert.include(data, "url(//assets1.example.com/images/two.png");
+      }
+    },
+    teardown: function() {
+      cleanBundles('test2');
+    }
+  }
+});
