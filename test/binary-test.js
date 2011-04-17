@@ -23,6 +23,9 @@ var cleanBundles = function(set) {
 assert.hasFile = function(set, type, name) {
   assert.isTrue(path.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
 };
+assert.notHasFile = function(set, type, name) {
+  assert.isFalse(path.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
+};
 assert.hasBundledFile = function(set, type, name) {
   assert.isTrue(path.existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
 };
@@ -303,6 +306,40 @@ exports.Suite = vows.describe('packaging all').addBatch({
     'should not bundle js into compressed packages': function() {
       assert.notHasBundledFile('test1', 'javascripts', 'subset.js.gz');
       assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'not compiling less when packaging js packages only': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.js'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should not compile css to less': function() {
+      assert.notHasFile('test1', 'stylesheets', 'one.css');
+      assert.notHasFile('test1', 'stylesheets', 'two.css');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'not showing processing JS when packaging CSS only': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
+    'should not output processing JS': function(error, stdout) {
+      assert.equal(-1, stdout.indexOf("Processing type 'javascripts'"));
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'not showing processing CSS when packaging JS only': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.js'),
+    'should not output processing CSS': function(error, stdout) {
+      assert.equal(-1, stdout.indexOf("Processing type 'stylesheets'"));
     },
     teardown: function() {
       cleanBundles('test1');

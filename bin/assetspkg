@@ -34,7 +34,9 @@ if (options.only) {
         if (this.list[i] == name) return true;
       }
       return false;
-    }
+    },
+    hasCSS: /\.css[,]?/.test(options.only),
+    hasJS: /\.js[,]?/.test(options.only)
   };
 }
 
@@ -79,13 +81,16 @@ var expander = new AssetsExpander(options.config, { root: options.root }),
 Seq.ap(expander.allTypes()).
   seqEach(function(type) {
     // First compile Less to CSS
-    if (type == 'stylesheets') {
+    if (type == 'stylesheets' && (!options.only || options.only.hasCSS)) {
       compileLessToCss(type, this);
     } else {
       this(null);
     }
   }).
   seqEach(function(type) {
+    if (type == 'stylesheets' && options.only && !options.only.hasCSS) return this(null);
+    if (type == 'javascripts' && options.only && !options.only.hasJS) return this(null);
+    
     // Then process all files
     var self = this;
     sys.puts("Processing type '" + type + "'...");
