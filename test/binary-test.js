@@ -205,3 +205,107 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
     }
   }
 });
+
+exports.Suite = vows.describe('packaging all').addBatch({
+  'packaging only one selected package': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should compile css to less': function() {
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
+    },
+    'should bundle selected css into packages': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
+    },
+    'should bundle selected css into compressed packages': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css.gz');
+    },
+    'should bundle selected css into compressed packages without embedded content': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset-noembed.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-noembed.css.gz');
+    },
+    'should not bundle js into packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js');
+    },
+    'should not bundle js into compressed packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js.gz');
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js.gz');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'packaging only two selected packages': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should compile css to less': function() {
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
+    },
+    'should bundle selected css into packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
+    },
+    'should bundle selected css into compressed packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css.gz');
+    },
+    'should bundle selected css into compressed packages without embedded content': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset-noembed.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-noembed.css.gz');
+    },
+    'should not bundle js into packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js');
+    },
+    'should not bundle js into compressed packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js.gz');
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js.gz');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'packaging only three selected packages': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css,all.js'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should compile css to less': function() {
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
+    },
+    'should bundle selected css into packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
+    },
+    'should bundle selected css into compressed packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css.gz');
+    },
+    'should bundle selected css into compressed packages without embedded content': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset-noembed.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-noembed.css.gz');
+    },
+    'should not bundle js into packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js');
+    },
+    'should not bundle js into compressed packages': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js.gz');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+});

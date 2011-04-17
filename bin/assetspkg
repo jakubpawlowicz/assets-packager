@@ -15,7 +15,8 @@ var options = {
   root: 'public',
   config: 'config/assets.yml',
   gzip: false,
-  noEmbedVersion: false
+  noEmbedVersion: false,
+  only: undefined
 };
 
 var argv = require('optimist').argv;
@@ -24,6 +25,18 @@ options.root = path.join(process.cwd(), argv.r || argv.root || options.root);
 options.config = path.join(process.cwd(), argv.c || argv.config || options.config);
 options.gzip = argv.g || argv.gzip || options.gzip;
 options.noEmbedVersion = argv.n || argv.noembedversion || options.noEmbedVersion;
+options.only = argv.o || argv.only || options.only;
+if (options.only) {
+  options.only = {
+    list: options.only.split(','),
+    has: function(name) {
+      for (var i = 0, c = this.list.length; i < c; i++) {
+        if (this.list[i] == name) return true;
+      }
+      return false;
+    }
+  };
+}
 
 // Usage
 if (argv.h || argv.help) {
@@ -31,8 +44,9 @@ if (argv.h || argv.help) {
   sys.puts("options:");
   sys.puts("  -c, --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
   sys.puts("  -r, --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
-  sys.puts("  -g, --gzip\t\Gzip packaged files (defaults to false).");
-  sys.puts("  -n, --noembedversion\t\Produce a version of packaged CSS without embedded images (defaults to false).");
+  sys.puts("  -g, --gzip\t\tGzip packaged files (defaults to false).");
+  sys.puts("  -n, --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
+  sys.puts("  -o, --only\t\tPackage only given assets group (or groups if separated by comma).");
   sys.puts("  -h, --help\t\tYou are staring at it!");
   sys.puts("  -v, --version\t\tAssets Packager version.");
   process.exit(0);
@@ -78,6 +92,8 @@ Seq.ap(expander.allTypes()).
 
     Seq.ap(expander.groupsFor(type)).
       parEach(4, function(groupName) {
+        if (options.only && !options.only.has(groupName + '.' + extensions[type])) return this(null);
+        
         processGroup(type, groupName, this);
       }).
       seq('type', self, null)
