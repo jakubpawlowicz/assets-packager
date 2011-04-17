@@ -1,3 +1,12 @@
+0.2.0 / 2011-04-17
+==================
+  
+  * Added option to package only a subset of bundles.
+  * Added option to gzip bundles.
+  * Added option to produce non-embedded version of CSS bundles.
+  * Added binary tests.
+  * Added Makefile.
+
 0.1.1 / 2011-04-15
 ==================
 
