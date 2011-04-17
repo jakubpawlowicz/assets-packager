@@ -13,13 +13,15 @@ var fs = require('fs'),
 // Init optimist arguments parsing
 var options = {
   root: 'public',
-  config: 'config/assets.yml'
+  config: 'config/assets.yml',
+  gzip: false
 };
 
 var argv = require('optimist').argv;
 
 options.root = path.join(process.cwd(), argv.r || argv.root || options.root);
 options.config = path.join(process.cwd(), argv.c || argv.config || options.config);
+options.gzip = argv.g || argv.gzip || options.gzip;
 
 // Usage
 if (argv.h || argv.help) {
@@ -27,6 +29,7 @@ if (argv.h || argv.help) {
   sys.puts("options:");
   sys.puts("  -c, --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
   sys.puts("  -r, --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
+  sys.puts("  -g, --gzip\t\Gzip packaged files (defaults to false).");
   sys.puts("  -h, --help\t\tYou are staring at it!");
   sys.puts("  -v, --version\t\tAssets Packager version.");
   process.exit(0);
@@ -123,12 +126,16 @@ var processGroup = function(type, group, callback) {
         fs.writeFile(groupPath, data.embedded.plain, 'utf-8', this);
       }).
       par(function(data) {
+        if (!options.gzip) return this(null);
+        
         fs.writeFile(groupPath + '.gz', data.embedded.compressed, 'utf-8', this);
       }).
       par(function(data) {
         fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]), data.notEmbedded.plain, 'utf-8', this);
       }).
       par(function(data) {
+        if (!options.gzip) return this(null);
+
         fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]) + '.gz', data.notEmbedded.compressed, 'utf-8', this);
       }).
       seq(function() {
@@ -154,6 +161,8 @@ var processGroup = function(type, group, callback) {
         fs.writeFile(groupPath, data, 'utf-8', this);
       }).
       seq(function() {
+        if (!options.gzip) return this(null);
+        
         exec('gzip -c6 ' + groupPath + ' > ' + groupPath + '.gz', this);
       }).
       seq(function() {

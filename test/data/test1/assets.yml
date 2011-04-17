@@ -1,0 +1,6 @@
+stylesheets:
+  subset: 'one'
+  all: 'one,two'
+javascripts:
+  subset: 'two'
+  all: '*'
