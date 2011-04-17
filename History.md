@@ -1,3 +1,9 @@
+0.3.0 / 2011-04-17
+==================
+  
+  * Added ability to specify asset hosts via -a parameter.
+  * Added skipping LESS processing when packaging JS files only.
+
 0.2.0 / 2011-04-17
 ==================
   
