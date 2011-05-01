@@ -246,7 +246,7 @@ exports.Suite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'packaging only two selected packages': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css'),
-    'should not give error': function(error, stdout) {
+    'should not give error': function(error, stdout, stderr) {
       assert.isNull(error);
     },
     'should compile css to less': function() {
@@ -320,6 +320,50 @@ exports.Suite = vows.describe('packaging all').addBatch({
     'should not compile css to less': function() {
       assert.notHasFile('test1', 'stylesheets', 'one.css');
       assert.notHasFile('test1', 'stylesheets', 'two.css');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'compiling all javascripts': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o \\*.js'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should not compile css to less': function() {
+      assert.notHasFile('test1', 'stylesheets', 'one.css');
+      assert.notHasFile('test1', 'stylesheets', 'two.css');
+    },
+    'should not bundle selected css into packages': function() {
+      assert.notHasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.notHasBundledFile('test1', 'stylesheets', 'all.css');
+    },
+    'should package all js files': function() {
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js')
+      assert.hasBundledFile('test1', 'javascripts', 'all.js')
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'compiling all stylesheets': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o \\*.css'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should compile css to less': function() {
+      assert.hasFile('test1', 'stylesheets', 'one.css');
+      assert.hasFile('test1', 'stylesheets', 'two.css');
+    },
+    'should bundle selected css into packages': function() {
+      assert.hasBundledFile('test1', 'stylesheets', 'subset.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all.css');
+    },
+    'should package all js files': function() {
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js')
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js')
     },
     teardown: function() {
       cleanBundles('test1');

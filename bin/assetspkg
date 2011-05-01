@@ -9,6 +9,11 @@ var fs = require('fs'),
   cleanCSS = require('clean-css'),
   EnhanceCSS = require('enhance-css'),
   AssetsExpander = require('assets-expander');
+  
+// Taken from MooTools 1.3
+var escapeRegExp = function(s) {
+  return s.replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
+};
 
 // Init optimist arguments parsing
 var options = {
@@ -27,12 +32,15 @@ options.config = path.join(process.cwd(), argv.c || argv.config || options.confi
 options.gzip = argv.g || argv.gzip || options.gzip;
 options.noEmbedVersion = argv.n || argv.noembedversion || options.noEmbedVersion;
 options.only = argv.o || argv.only || options.only;
+
 if (options.only) {
   options.only = {
-    list: options.only.split(','),
+    list: options.only.split(',').map(function(template) {
+      return new RegExp(escapeRegExp(template).replace('\\*', '.*'));
+    }),
     has: function(name) {
       for (var i = 0, c = this.list.length; i < c; i++) {
-        if (this.list[i] == name) return true;
+        if (this.list[i].test(name)) return true;
       }
       return false;
     },
