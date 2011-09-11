@@ -1,3 +1,9 @@
+0.3.1 / 2011-09-11
+==================
+  
+  * Only (-o) option accepts wildcard options, e.g (*.js)
+  * JavaScript optimization does not output beautified code anymore but minimized one with breaks after ~ 40 characters.
+
 0.3.0 / 2011-04-17
 ==================
   
