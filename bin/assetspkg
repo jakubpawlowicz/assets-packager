@@ -193,7 +193,8 @@ var processGroup = function(type, group, callback) {
           ast = uglify.uglify.ast_mangle(ast);
           ast = uglify.uglify.ast_squeeze(ast);
         }
-        var data = uglify.uglify.gen_code(ast, { beautify: true, indent_level: 0 });
+        var data = uglify.uglify.gen_code(ast)
+        data = uglify.uglify.split_lines(data, 40);
         
         fs.writeFile(groupPath, data, 'utf-8', this);
       }).

@@ -391,6 +391,26 @@ exports.Suite = vows.describe('packaging all').addBatch({
   }
 });
 
+exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
+  'correct optimization': {
+    topic: withOptions('-r data/test3/public -c data/test3/assets.yml'),
+    'for all.js': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
+      },
+      'data': function(error, data) {
+        if (error) throw error;
+        
+        assert.equal(["function factorial(a){return a==0?1:a*factorial", "(a-1)}for(var i=0,j=factorial(10).toString", "(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
+          data);
+      }
+    },
+    teardown: function() {
+      cleanBundles('test3');
+    }
+  }
+});
+
 exports.assetsHosts = vows.describe('assets hosts').addBatch({
   'no asset hosts': {
     topic: withOptions('-r data/test2/public -c data/test2/assets.yml'),
