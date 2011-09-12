@@ -187,14 +187,19 @@ var processGroup = function(type, group, callback) {
       }).
       seq(function() {
         var content = joinFiles(filesList);
+        var isCufon = /Cufon\.registerFont/.test(content);
         var ast = uglify.parser.parse(content);
-        if (!/Cufon\.registerFont/.test(content)) {
+        var data = '';
+        
+        if (!isCufon) {
           // We skip mangling for Cufon as it doesn't like it.
           ast = uglify.uglify.ast_mangle(ast);
           ast = uglify.uglify.ast_squeeze(ast);
+          data = uglify.uglify.gen_code(ast);
+          data = uglify.uglify.split_lines(data, 80);
+        } else {
+          data = uglify.uglify.gen_code(ast, { beautify: true, indent_level: 0 });
         }
-        var data = uglify.uglify.gen_code(ast)
-        data = uglify.uglify.split_lines(data, 40);
         
         fs.writeFile(groupPath, data, 'utf-8', this);
       }).

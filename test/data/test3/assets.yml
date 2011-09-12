@@ -1,2 +1,3 @@
 javascripts:
-  all: '*'
+  optimizations: 'factorial'
+  fonts: 'cufon'

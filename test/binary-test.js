@@ -394,15 +394,26 @@ exports.Suite = vows.describe('packaging all').addBatch({
 exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
   'correct optimization': {
     topic: withOptions('-r data/test3/public -c data/test3/assets.yml'),
-    'for all.js': {
+    'for optimizations.js': {
       topic: function() {
-        fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
+        fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/optimizations.js'), 'utf-8', this.callback);
       },
       'data': function(error, data) {
         if (error) throw error;
         
-        assert.equal(["function factorial(a){return a==0?1:a*factorial", "(a-1)}for(var i=0,j=factorial(10).toString", "(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
+        assert.equal(["function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
           data);
+      }
+    },
+    'for cufon.js': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/fonts.js'), 'utf-8', this.callback);
+      },
+      'data': function(error, data) {
+        if (error) throw error;
+        
+        assert.equal("Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: \"88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77\"\n} ]\n};\n});",
+          data)
       }
     },
     teardown: function() {
