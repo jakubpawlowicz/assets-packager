@@ -1,3 +1,10 @@
+0.3.2 / 2011-09-12
+==================
+  
+  * Fixed processing font definition (Cufon) files (no optimizations there).
+  * Increased number of characters per line to ~ 80 in optimized JS files.
+  * Fixed '-v' switch in NPM 1.x.
+
 0.3.1 / 2011-09-11
 ==================
   
