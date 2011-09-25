@@ -1,6 +1,6 @@
-## What is asset-packager? ##
+## What is assets-packager? ##
 
-Asset-packager is a node.js-based tool for compiling, minifying, and packaging CSS and JavaScript assets into production-ready packages.
+Assets-packager is a node.js-based tool for compiling, minifying, and packaging CSS and JavaScript assets into production-ready packages.
 
 CSS bundles are created from assets which are
 
@@ -18,9 +18,9 @@ And JavaScripts ones are
 
 ## Usage ##
 
-### How to install asset-packager? ###
+### How to install assets-packager? ###
 
-    npm install asset-packager
+    npm install assets-packager
 
 ### Tl;dr. Give me a quick demo! ###
 
@@ -43,7 +43,7 @@ We use it on our production servers at [GoalSmashers.com](http://goalsmashers.co
 
 So yes, it is fast!
 
-### How to use asset-packager in my application? ###
+### How to use assets-packager in my application? ###
 
 First of all it assumes you have Rails-like directory structure for your assets, e.g:
 
@@ -88,10 +88,10 @@ Options include:
 
 Open an issue. Or better: fork the project, add the feature (don't forget about tests!) and send a pull request.
 
-### How to test asset-packager? ###
+### How to test assets-packager? ###
 
     make test
 
 ## License ##
 
-Asset-packager is released under the MIT license.
+Assets-packager is released under the MIT license.
