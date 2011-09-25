@@ -1,0 +1,6 @@
+stylesheets:
+  application: 'reset,grid,base,application'
+javascripts:
+  application:
+    - 'vendor/jquery'
+    - 'application,helpers'
