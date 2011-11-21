@@ -9,7 +9,7 @@ var fs = require('fs'),
   cleanCSS = require('clean-css'),
   EnhanceCSS = require('enhance-css'),
   AssetsExpander = require('assets-expander');
-  
+
 // Taken from MooTools 1.3
 var escapeRegExp = function(s) {
   return s.replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
@@ -19,6 +19,8 @@ var escapeRegExp = function(s) {
 var options = {
   root: 'public',
   config: 'config/assets.yml',
+  noMinifyJS: false,
+  indentLevel: 0,
   gzip: false,
   noEmbedVersion: false,
   only: undefined,
@@ -30,6 +32,8 @@ var argv = require('optimist').argv;
 options.root = path.join(process.cwd(), argv.r || argv.root || options.root);
 options.config = path.join(process.cwd(), argv.c || argv.config || options.config);
 options.gzip = argv.g || argv.gzip || options.gzip;
+options.noMinifyJS = argv.nm || argv.nominifyjs || options.noMinifyJS;
+options.indentLevel = argv.i || argv.indent || options.indentLevel;
 options.noEmbedVersion = argv.n || argv.noembedversion || options.noEmbedVersion;
 options.only = argv.o || argv.only || options.only;
 
@@ -54,14 +58,15 @@ options.assetHosts = argv.a || argv.assethosts || options.assetHosts;
 if (argv.h || argv.help) {
   sys.puts("usage: assetspkg [options]\n");
   sys.puts("options:");
-  sys.puts("  -c, --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
-  sys.puts("  -r, --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
-  sys.puts("  -g, --gzip\t\tGzip packaged files (defaults to false).");
-  sys.puts("  -n, --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
-  sys.puts("  -a, --assethosts\tAssets host to use in CSS bundles (defaults to none).");
-  sys.puts("  -o, --only\t\tPackage only given assets group (or groups if separated by comma).");
-  sys.puts("  -h, --help\t\tYou are staring at it!");
-  sys.puts("  -v, --version\t\tAssets Packager version.");
+  sys.puts("  -c,  --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
+  sys.puts("  -r,  --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
+  sys.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
+  sys.puts("  -nm, --nominifyjs\t\tOnly combine JS files, do not minify them (defaults to false).");
+  sys.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
+  sys.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
+  sys.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
+  sys.puts("  -h,  --help\t\tYou are staring at it!");
+  sys.puts("  -v,  --version\t\tAssets Packager version.");
   process.exit(0);
 }
 
@@ -101,7 +106,7 @@ Seq.ap(expander.allTypes()).
   seqEach(function(type) {
     if (type == 'stylesheets' && options.only && !options.only.hasCSS) return this(null);
     if (type == 'javascripts' && options.only && !options.only.hasJS) return this(null);
-    
+
     // Then process all files
     var self = this;
     sys.puts("Processing type '" + type + "'...");
@@ -109,7 +114,7 @@ Seq.ap(expander.allTypes()).
     Seq.ap(expander.groupsFor(type)).
       parEach(4, function(groupName) {
         if (options.only && !options.only.has(groupName + '.' + extensions[type])) return this(null);
-        
+
         processGroup(type, groupName, this);
       }).
       seq('type', self, null)
@@ -130,7 +135,7 @@ var joinFiles = function(list) {
 var compileLessToCss = function(type, callback) {
   var filesList = expander.processList(type + '/**/*', { type: 'less', root: options.root });
   sys.puts("Compiling " + filesList.length + " Less file(s) to CSS...");
-  
+
   Seq.ap(filesList).
     parEach(function(pathToLessFile) {
       sys.puts("  Compiling '" + path.basename(pathToLessFile) + "'...");
@@ -146,7 +151,7 @@ var processGroup = function(type, group, callback) {
   var filesList = expander.processGroup(type, group, { type: extensions[type] }),
     groupPath = path.join(options.root, type, 'bundled', group) + '.' + extensions[type],
     groupDir = path.dirname(groupPath);
-  
+
   if (type == 'stylesheets') {
     Seq().
       seq(function() {
@@ -162,12 +167,12 @@ var processGroup = function(type, group, callback) {
       }).
       par(function(data) { // compressed plain file
         if (!options.gzip) return this(null);
-        
+
         fs.writeFile(groupPath + '.gz', data.embedded.compressed, 'utf-8', this);
       }).
       par(function(data) { // not-embedded version
         if (!options.noEmbedVersion) return this(null);
-        
+
         fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]), data.notEmbedded.plain, 'utf-8', this);
       }).
       par(function(data) { // not-embedded, gzipped version
@@ -190,22 +195,22 @@ var processGroup = function(type, group, callback) {
         var isCufon = /Cufon\.registerFont/.test(content);
         var ast = uglify.parser.parse(content);
         var data = '';
-        
-        if (!isCufon) {
-          // We skip mangling for Cufon as it doesn't like it.
+
+        if (isCufon || options.noMinifyJS) {
+          // Maybe no minification was required. We also skip mangling for Cufon as it doesn't like it.
+          data = uglify.uglify.gen_code(ast, { beautify: true, indent_level: options.indentLevel });
+        } else {
           ast = uglify.uglify.ast_mangle(ast);
           ast = uglify.uglify.ast_squeeze(ast);
           data = uglify.uglify.gen_code(ast);
           data = uglify.uglify.split_lines(data, 80);
-        } else {
-          data = uglify.uglify.gen_code(ast, { beautify: true, indent_level: 0 });
         }
-        
+
         fs.writeFile(groupPath, data, 'utf-8', this);
       }).
       seq(function() {
         if (!options.gzip) return this(null);
-        
+
         exec('gzip -c6 ' + groupPath + ' > ' + groupPath + '.gz', this);
       }).
       seq(function() {

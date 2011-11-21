@@ -400,7 +400,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
       },
       'data': function(error, data) {
         if (error) throw error;
-        
+
         assert.equal(["function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
           data);
       }
@@ -411,9 +411,26 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
       },
       'data': function(error, data) {
         if (error) throw error;
-        
+
         assert.equal("Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: \"88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77\"\n} ]\n};\n});",
           data)
+      }
+    },
+    teardown: function() {
+      cleanBundles('test3');
+    }
+  }
+}).addBatch({
+  'no JS minification': {
+    topic: withOptions('-r data/test3/public --nm -i 2 -c data/test3/assets.yml'),
+    'for optimizations.js': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/optimizations.js'), 'utf-8', this.callback);
+      },
+      'data': function(error, data) {
+        if (error) throw error;
+
+        assert.equal(data, "function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}");
       }
     },
     teardown: function() {
