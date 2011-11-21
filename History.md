@@ -1,3 +1,8 @@
+0.4.0 / 2011-11-21
+==================
+
+  * Added pull request by @chikamichi with --nominifyjs and --indent options.
+
 0.3.2 / 2011-09-12
 ==================
   

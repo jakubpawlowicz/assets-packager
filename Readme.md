@@ -100,6 +100,10 @@ First, install dependencies
 Then, run the specs
 
     make test
+    
+## Contributors ##
+
+* Jean-Denis Vauguet (@chikamichi) - --nominifyjs and --indent options allow for combination-only processing.
 
 ## License ##
 
