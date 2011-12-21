@@ -1,3 +1,8 @@
+0.4.1 / 2011-12-21
+==================
+
+  * Added throttling to less compilation so it does not eat too many processes at once.
+
 0.4.0 / 2011-11-21
 ==================
 
