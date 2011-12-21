@@ -14,6 +14,7 @@ var fs = require('fs'),
 var escapeRegExp = function(s) {
   return s.replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
 };
+var maxConcurrent = require('os').cpus().length;
 
 // Init optimist arguments parsing
 var options = {
@@ -112,7 +113,7 @@ Seq.ap(expander.allTypes()).
     sys.puts("Processing type '" + type + "'...");
 
     Seq.ap(expander.groupsFor(type)).
-      parEach(4, function(groupName) {
+      parEach(maxConcurrent, function(groupName) {
         if (options.only && !options.only.has(groupName + '.' + extensions[type])) return this(null);
 
         processGroup(type, groupName, this);
@@ -137,7 +138,7 @@ var compileLessToCss = function(type, callback) {
   sys.puts("Compiling " + filesList.length + " Less file(s) to CSS...");
 
   Seq.ap(filesList).
-    parEach(function(pathToLessFile) {
+    parEach(maxConcurrent, function(pathToLessFile) {
       sys.puts("  Compiling '" + path.basename(pathToLessFile) + "'...");
       exec('lessc ' + pathToLessFile + ' > ' + pathToLessFile.replace('.less', '.css'), this);
     }).
