@@ -2,7 +2,7 @@
 
 var fs = require('fs'),
   path = require('path'),
-  sys = require('sys'),
+  sys = require('util'),
   uglify = require('uglify-js'),
   Seq = require('seq'),
   exec = require('child_process').exec,
