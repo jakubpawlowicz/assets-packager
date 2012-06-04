@@ -401,7 +401,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
       'data': function(error, data) {
         if (error) throw error;
 
-        assert.equal(["function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
+        assert.equal(["function factorial(n){return n==0?1:n*factorial(n-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
           data);
       }
     },
