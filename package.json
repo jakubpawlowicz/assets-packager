@@ -8,7 +8,7 @@
     "type" : "git",
     "url" : "http://github.com/GoalSmashers/assets-packager.git"
   },
-  "version": "0.4.1",
+  "version": "0.4.2",
   "main": "index.js",
   "bin": {
     "assetspkg": "./bin/assetspkg"
