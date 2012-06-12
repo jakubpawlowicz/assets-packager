@@ -20,7 +20,7 @@ And JavaScripts ones are
 
 ### How to install assets-packager? ###
 
-    npm install assets-packager
+    npm install -g assets-packager
 
 ### Tl;dr. Give me a quick demo! ###
 
