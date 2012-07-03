@@ -1,3 +1,12 @@
+0.5.0 / 2012-07-03
+==================
+
+  * Added hard cache boosters option (-b) for creating files with MD5 hash in name.
+  * Added cached file (if config is assets.yml then it's named .assets.yml.json) with MD5 hashes for current stamps.
+  * Added test for cache boosters
+  * Updated enhance-css to 0.3.x.
+  * Updated clean-css to 0.4.x and optimist to 0.3.x.
+
 0.4.2 / 2012-06-04
 ==================
 
