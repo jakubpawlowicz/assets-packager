@@ -19,7 +19,7 @@
     "gzip": "0.1.x",
     "uglify-js": "1.x",
     "clean-css": "0.2.x",
-    "enhance-css": "0.2.x",
+    "enhance-css": "0.3.x",
     "assets-expander": "0.2.x"
   }
 }

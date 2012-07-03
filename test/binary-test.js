@@ -274,6 +274,34 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       cleanBundles('test1');
     }
   }
+}).addBatch({
+  'should rename files when adding cache stamps': {
+    topic: withOptions('-b -r data/test2/public -c data/test2/assets.yml'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should create stamped files': function() {
+      assert.isTrue(path.existsSync(fullPath('test/data/test2/public/images/one-77f77b6eaf58028e095681c21bad95a8.png')));
+      assert.isTrue(path.existsSync(fullPath('test/data/test2/public/images/two-77f77b6eaf58028e095681c21bad95a8.png')));
+    },
+    'should put stamped files into CSS file': {
+      topic: function() {
+        var cacheInfo = cacheData('test2');
+        fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all-' + cacheInfo['stylesheets/all'] + '.css'), 'utf-8', this.callback);
+      },
+      'one.png': function(error, data) {
+        assert.include(data, "/images/one-77f77b6eaf58028e095681c21bad95a8.png");
+      },
+      'two.png': function(error, data) {
+        assert.include(data, "/images/two-77f77b6eaf58028e095681c21bad95a8.png");
+      }
+    },
+    teardown: function() {
+      cleanBundles('test2');
+      exec('rm -rf ' + fullPath('test/data/test2/public/images/one-*'));
+      exec('rm -rf ' + fullPath('test/data/test2/public/images/two-*'));
+    }
+  }
 });
 
 exports.Suite = vows.describe('packaging all').addBatch({
