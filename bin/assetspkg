@@ -2,10 +2,11 @@
 
 var fs = require('fs'),
   path = require('path'),
-  sys = require('util'),
+  util = require('util'),
   uglify = require('uglify-js'),
   Seq = require('seq'),
   exec = require('child_process').exec,
+  crypto = require('crypto'),
   cleanCSS = require('clean-css'),
   EnhanceCSS = require('enhance-css'),
   AssetsExpander = require('assets-expander');
@@ -25,7 +26,8 @@ var options = {
   gzip: false,
   noEmbedVersion: false,
   only: undefined,
-  assetHosts: undefined
+  assetHosts: undefined,
+  cacheBoosters: false
 };
 
 var argv = require('optimist').argv;
@@ -37,6 +39,7 @@ options.noMinifyJS = argv.nm || argv.nominifyjs || options.noMinifyJS;
 options.indentLevel = argv.i || argv.indent || options.indentLevel;
 options.noEmbedVersion = argv.n || argv.noembedversion || options.noEmbedVersion;
 options.only = argv.o || argv.only || options.only;
+options.cacheBoosters = argv.b || argv.cacheboosters || options.cacheBoosters;
 
 if (options.only) {
   options.only = {
@@ -57,24 +60,25 @@ options.assetHosts = argv.a || argv.assethosts || options.assetHosts;
 
 // Usage
 if (argv.h || argv.help) {
-  sys.puts("usage: assetspkg [options]\n");
-  sys.puts("options:");
-  sys.puts("  -c,  --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
-  sys.puts("  -r,  --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
-  sys.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
-  sys.puts("  -nm, --nominifyjs\t\tOnly combine JS files, do not minify them (defaults to false).");
-  sys.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
-  sys.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
-  sys.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
-  sys.puts("  -h,  --help\t\tYou are staring at it!");
-  sys.puts("  -v,  --version\t\tAssets Packager version.");
+  util.puts("usage: assetspkg [options]\n");
+  util.puts("options:");
+  util.puts("  -c,  --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
+  util.puts("  -r,  --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
+  util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
+  util.puts("  -nm, --nominifyjs\t\tOnly combine JS files, do not minify them (defaults to false).");
+  util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
+  util.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
+  util.puts("  -b,  --cacheboosters\tAdd MD5 hash to file names (aka hard cache boosters).");
+  util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
+  util.puts("  -h,  --help\t\tYou are staring at it!");
+  util.puts("  -v,  --version\t\tAssets Packager version.");
   process.exit(0);
 }
 
 // Version
 if (argv.v || argv.version) {
   var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
-  sys.puts(JSON.parse(packageConfig).version);
+  util.puts(JSON.parse(packageConfig).version);
   process.exit(0);
 }
 
@@ -92,7 +96,8 @@ if (!path.existsSync(options.root)) {
 
 // Configuration seems to be fine. Proceed with packaging!
 var expander = new AssetsExpander(options.config, { root: options.root }),
-  extensions = { stylesheets: 'css', javascripts: 'js' };
+  extensions = { stylesheets: 'css', javascripts: 'js' },
+  cacheData = {};
 
 // Packaging action
 Seq.ap(expander.allTypes()).
@@ -110,7 +115,7 @@ Seq.ap(expander.allTypes()).
 
     // Then process all files
     var self = this;
-    sys.puts("Processing type '" + type + "'...");
+    util.puts("Processing type '" + type + "'...");
 
     Seq.ap(expander.groupsFor(type)).
       parEach(maxConcurrent, function(groupName) {
@@ -118,7 +123,14 @@ Seq.ap(expander.allTypes()).
 
         processGroup(type, groupName, this);
       }).
-      seq('type', self, null)
+      seq('type', self, null);
+  }).
+  seq(function() {
+    if (!options.cacheBoosters) this(null);
+
+    util.puts("Writing cache boosters config file.");
+    var cacheFile = path.join(path.dirname(options.config), "." + path.basename(options.config) + '.json');
+    fs.writeFile(cacheFile, JSON.stringify(cacheData), 'utf8', this);
   });
 
 // HELPER METHODS
@@ -132,14 +144,21 @@ var joinFiles = function(list) {
   return content;
 };
 
+// Calculates MD5 hash for cache boosters
+var cacheHash = function(data) {
+  var hash = crypto.createHash('md5');
+  hash.update(data.toString('utf8'));
+  return hash.digest('hex');
+};
+
 // Compiles LESS files to CSS
 var compileLessToCss = function(type, callback) {
   var filesList = expander.processList(type + '/**/*', { type: 'less', root: options.root });
-  sys.puts("Compiling " + filesList.length + " Less file(s) to CSS...");
+  util.puts("Compiling " + filesList.length + " Less file(s) to CSS...");
 
   Seq.ap(filesList).
     parEach(maxConcurrent, function(pathToLessFile) {
-      sys.puts("  Compiling '" + path.basename(pathToLessFile) + "'...");
+      util.puts("  Compiling '" + path.basename(pathToLessFile) + "'...");
       exec('lessc ' + pathToLessFile + ' > ' + pathToLessFile.replace('.less', '.css'), this);
     }).
     seq('less', function() {
@@ -161,9 +180,21 @@ var processGroup = function(type, group, callback) {
       seq(function() {
         var data = joinFiles(filesList);
         var cleaned = cleanCSS.process(data);
-        new EnhanceCSS({ rootPath: options.root, pregzip: true, noEmbedVersion: options.noEmbedVersion, assetHosts: options.assetHosts }).process(cleaned, this);
+        new EnhanceCSS({
+          rootPath: options.root,
+          pregzip: true,
+          noEmbedVersion: options.noEmbedVersion,
+          assetHosts: options.assetHosts,
+          cryptedStamp: options.cacheBoosters
+        }).process(cleaned, this);
       }).
       par(function(data) { // plain file
+        if (options.cacheBoosters) {
+          var groupHash = cacheHash(data.embedded.plain);
+          cacheData[type + '/' + group] = groupHash;
+          groupPath = path.join(options.root, type, 'bundled', group) + '-' + groupHash + '.' + extensions[type];
+        }
+
         fs.writeFile(groupPath, data.embedded.plain, 'utf-8', this);
       }).
       par(function(data) { // compressed plain file
@@ -182,7 +213,7 @@ var processGroup = function(type, group, callback) {
         fs.writeFile(groupPath.replace('.' + extensions[type], '-noembed.' + extensions[type]) + '.gz', data.notEmbedded.compressed, 'utf-8', this);
       }).
       seq(function() {
-        sys.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");
+        util.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");
         this(null);
       }).
       seq('css', callback);
@@ -207,6 +238,12 @@ var processGroup = function(type, group, callback) {
           data = uglify.uglify.split_lines(data, 80);
         }
 
+        if (options.cacheBoosters) {
+          var groupHash = cacheHash(data);
+          cacheData[type + '/' + group] = groupHash;
+          groupPath = path.join(options.root, type, 'bundled', group) + '-' + groupHash + '.' + extensions[type];
+        }
+
         fs.writeFile(groupPath, data, 'utf-8', this);
       }).
       seq(function() {
@@ -215,7 +252,7 @@ var processGroup = function(type, group, callback) {
         exec('gzip -c6 ' + groupPath + ' > ' + groupPath + '.gz', this);
       }).
       seq(function() {
-        sys.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");
+        util.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");
         this(null);
       }).
       seq('js', callback)

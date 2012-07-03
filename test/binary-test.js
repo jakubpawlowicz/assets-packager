@@ -18,6 +18,12 @@ var cleanBundles = function(set) {
   exec('rm -rf ' + fullPath('test/data/' + set + '/public/javascripts/bundled'));
   exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/bundled'));
   exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/*.css'));
+  exec('rm -rf ' + fullPath('test/data/' + set + '/.assets.yml.json'));
+};
+
+var cacheData = function(set) {
+  var data = fs.readFileSync(fullPath('test/data/' + set + '/.assets.yml.json'));
+  return JSON.parse(data);
 };
 
 assert.hasFile = function(set, type, name) {
@@ -202,6 +208,44 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
     'should bundle js into compressed packages': function() {
       assert.hasBundledFile('test1', 'javascripts', 'subset.js.gz');
       assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
+}).addBatch({
+  'packaging with hard cache boosters enabled': {
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should create .assets.yml.json': function() {
+      assert.isTrue(path.existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
+    },
+    'should bundle css into packages': function() {
+      var cacheInfo = cacheData('test1');
+      assert.hasBundledFile('test1', 'stylesheets', 'subset-' + cacheInfo['stylesheets/subset'] + '.css');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-' + cacheInfo['stylesheets/subset'] + '.css');
+    },
+    'should bundle css into compressed packages': function() {
+      var cacheInfo = cacheData('test1');
+      assert.hasBundledFile('test1', 'stylesheets', 'subset-' + cacheInfo['stylesheets/subset'] + '.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-' + cacheInfo['stylesheets/subset'] + '.css.gz');
+    },
+    'should bundle css into compressed packages without embedded content': function() {
+      var cacheInfo = cacheData('test1');
+      assert.hasBundledFile('test1', 'stylesheets', 'subset-' + cacheInfo['stylesheets/subset'] + '-noembed.css.gz');
+      assert.hasBundledFile('test1', 'stylesheets', 'all-' + cacheInfo['stylesheets/subset'] + '-noembed.css.gz');
+    },
+    'should bundle js into packages': function() {
+      var cacheInfo = cacheData('test1');
+      assert.hasBundledFile('test1', 'javascripts', 'subset-' + cacheInfo['stylesheets/subset'] + '.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all-' + cacheInfo['stylesheets/subset'] + '.js');
+    },
+    'should bundle js into compressed packages': function() {
+      var cacheInfo = cacheData('test1');
+      assert.hasBundledFile('test1', 'javascripts', 'subset-' + cacheInfo['stylesheets/subset'] + '.js.gz');
+      assert.hasBundledFile('test1', 'javascripts', 'all-' + cacheInfo['stylesheets/subset'] + '.js.gz');
     },
     teardown: function() {
       cleanBundles('test1');
