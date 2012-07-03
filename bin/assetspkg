@@ -96,8 +96,13 @@ if (!path.existsSync(options.root)) {
 
 // Configuration seems to be fine. Proceed with packaging!
 var expander = new AssetsExpander(options.config, { root: options.root }),
-  extensions = { stylesheets: 'css', javascripts: 'js' },
-  cacheData = {};
+  extensions = { stylesheets: 'css', javascripts: 'js' };
+
+// Cache boosters stamp file
+var cacheFile = path.join(path.dirname(options.config), "." + path.basename(options.config) + '.json'),
+  cacheData = path.existsSync(cacheFile) ?
+    JSON.parse(fs.readFileSync(cacheFile, 'utf8')) :
+    {};
 
 // Packaging action
 Seq.ap(expander.allTypes()).
@@ -129,7 +134,6 @@ Seq.ap(expander.allTypes()).
     if (!options.cacheBoosters) this(null);
 
     util.puts("Writing cache boosters config file.");
-    var cacheFile = path.join(path.dirname(options.config), "." + path.basename(options.config) + '.json');
     fs.writeFile(cacheFile, JSON.stringify(cacheData), 'utf8', this);
   });
 

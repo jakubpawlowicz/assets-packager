@@ -251,6 +251,29 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       cleanBundles('test1');
     }
   }
+}).addBatch({
+  'packaging only one file should update cached stamps': {
+    topic: function() {
+      exec("echo '{\"test\":123}' > " + fullPath('/test/data/test1/.assets.yml.json'), this.callback);
+    },
+    'process with fake cache stamps file': {
+      topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b -o all.css'),
+      'should not give error': function(error, stdout) {
+        assert.isNull(error);
+      },
+      'should not remove test entry': function() {
+        var cacheInfo = cacheData('test1');
+        assert.equal(cacheInfo.test, 123);
+      },
+      'should add single file entry': function() {
+        var cacheInfo = cacheData('test1');
+        assert.notEqual(undefined, cacheInfo['stylesheets/all']);
+      }
+    },
+    teardown: function() {
+      cleanBundles('test1');
+    }
+  }
 });
 
 exports.Suite = vows.describe('packaging all').addBatch({
