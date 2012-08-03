@@ -181,19 +181,20 @@ var compileLessToCss = function(type, callback) {
         self = this;
 
       new (less.Parser)({
+        paths: [path.dirname(pathToLessFile)],
         filename: pathToLessFile,
         optimizations: 1
       }).parse(lessSource, function(error, tree) {
         if (error) {
-          util.error(pathToLessFile + ": " + util.inspect(error));
+          util.puts(pathToLessFile + ": " + util.inspect(error));
           process.exit(1);
         }
 
         try {
           css = tree.toCSS();
           fs.writeFile(pathToLessFile.replace('.less', '.css'), css, 'utf-8', self);
-        } catch (e) {
-          util.error(pathToLessFile + ": " + util.inspect(error));
+        } catch (error) {
+          util.puts(pathToLessFile + ": " + util.inspect(error));
           process.exit(2);
         }
       });
