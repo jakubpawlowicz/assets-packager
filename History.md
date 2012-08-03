@@ -1,3 +1,14 @@
+0.6.0 / 2012-08-03
+==================
+
+  * Speed up processing on systems with scarce resources.
+  * Replaced 'gzip' with node's zlib.
+  * Replaced 'lessc' with parsing via API.
+  * Updated dependencies to newest versions.
+  * Added vows dev dependency.
+  * Official support for node 0.6+ only.
+  * Added zip binary test.
+
 0.5.0 / 2012-07-03
 ==================
 
