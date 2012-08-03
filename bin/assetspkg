@@ -3,9 +3,10 @@
 var fs = require('fs'),
   path = require('path'),
   util = require('util'),
+  zlib = require('zlib'),
   uglify = require('uglify-js'),
+  less = require('less'),
   Seq = require('seq'),
-  exec = require('child_process').exec,
   crypto = require('crypto'),
   cleanCSS = require('clean-css'),
   EnhanceCSS = require('enhance-css'),
@@ -155,6 +156,18 @@ var cacheHash = function(data) {
   return hash.digest('hex');
 };
 
+// Dir maker
+var makeDir = function(dir) {
+  var toRoot = path.relative(options.root, dir),
+    currentDir = options.root;
+
+  toRoot.split('/').forEach(function(part) {
+    currentDir = path.join(currentDir, part);
+    if (!path.existsSync(currentDir))
+      fs.mkdirSync(currentDir, 0770);
+  });
+};
+
 // Compiles LESS files to CSS
 var compileLessToCss = function(type, callback) {
   var filesList = expander.processList(type + '/**/*', { type: 'less', root: options.root });
@@ -163,7 +176,27 @@ var compileLessToCss = function(type, callback) {
   Seq.ap(filesList).
     parEach(maxConcurrent, function(pathToLessFile) {
       util.puts("  Compiling '" + path.basename(pathToLessFile) + "'...");
-      exec('lessc ' + pathToLessFile + ' > ' + pathToLessFile.replace('.less', '.css'), this);
+
+      var lessSource = fs.readFileSync(pathToLessFile, 'utf-8'),
+        self = this;
+
+      new (less.Parser)({
+        filename: pathToLessFile,
+        optimizations: 1
+      }).parse(lessSource, function(error, tree) {
+        if (error) {
+          util.error(pathToLessFile + ": " + util.inspect(error));
+          process.exit(1);
+        }
+
+        try {
+          css = tree.toCSS();
+          fs.writeFile(pathToLessFile.replace('.less', '.css'), css, 'utf-8', self);
+        } catch (e) {
+          util.error(pathToLessFile + ": " + util.inspect(error));
+          process.exit(2);
+        }
+      });
     }).
     seq('less', function() {
       callback.call();
@@ -179,7 +212,8 @@ var processGroup = function(type, group, callback) {
   if (type == 'stylesheets') {
     Seq().
       seq(function() {
-        exec('mkdir -p ' + groupDir, this);
+        makeDir(groupDir);
+        this(null);
       }).
       seq(function() {
         var data = joinFiles(filesList);
@@ -224,13 +258,15 @@ var processGroup = function(type, group, callback) {
   } else {
     Seq().
       seq(function() {
-        exec('mkdir -p ' + groupDir, this);
+        makeDir(groupDir);
+        this(null);
       }).
       seq(function() {
         var content = joinFiles(filesList);
         var isCufon = /Cufon\.registerFont/.test(content);
         var ast = uglify.parser.parse(content);
         var data = '';
+        var self = this;
 
         if (isCufon || options.noMinifyJS) {
           // Maybe no minification was required. We also skip mangling for Cufon as it doesn't like it.
@@ -248,12 +284,21 @@ var processGroup = function(type, group, callback) {
           groupPath = path.join(options.root, type, 'bundled', group) + '-' + groupHash + '.' + extensions[type];
         }
 
-        fs.writeFile(groupPath, data, 'utf-8', this);
+        fs.writeFile(groupPath, data, 'utf-8', function(error) {
+          if (error) throw error;
+
+          self(null, data, groupPath);
+        });
       }).
-      seq(function() {
+      seq(function(data, groupPath) {
         if (!options.gzip) return this(null);
 
-        exec('gzip -c6 ' + groupPath + ' > ' + groupPath + '.gz', this);
+        var self = this;
+        zlib.gzip(data, function(error, compressedData) {
+          if (error) throw error;
+
+          fs.writeFile(groupPath + '.gz', compressedData, self);
+        });
       }).
       seq(function() {
         util.puts("  Processed " + type + " group '" + group + "' - squeezing " + filesList.length + " file(s)");

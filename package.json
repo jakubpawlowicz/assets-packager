@@ -15,11 +15,17 @@
   },
   "dependencies": {
     "optimist": "0.3.x",
-    "seq": "0.2.x",
-    "gzip": "0.1.x",
-    "uglify-js": "1.x",
-    "clean-css": "0.4.x",
-    "enhance-css": "0.3.x",
-    "assets-expander": "0.2.x"
+    "seq": "0.3.x",
+    "uglify-js": "1.2.x",
+    "less": "1.x",
+    "clean-css": "0.5.x",
+    "enhance-css": "0.4.x",
+    "assets-expander": "0.3.x"
+  },
+  "devDependencies": {
+    "vows": "*"
+  },
+  "engines": {
+    "node": ">=0.6.0"
   }
 }

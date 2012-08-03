@@ -2,6 +2,7 @@ var vows = require('vows'),
   assert = require('assert'),
   fs = require('fs'),
   path = require('path'),
+  zlib = require('zlib'),
   exec = require('child_process').exec;
 
 var withOptions = function(options) {
@@ -18,6 +19,7 @@ var cleanBundles = function(set) {
   exec('rm -rf ' + fullPath('test/data/' + set + '/public/javascripts/bundled'));
   exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/bundled'));
   exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/*.css'));
+  exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/**/*.css'));
   exec('rm -rf ' + fullPath('test/data/' + set + '/.assets.yml.json'));
 };
 
@@ -175,6 +177,12 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       assert.hasBundledFile('test1', 'javascripts', 'subset.js.gz');
       assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
     },
+    'should correctly compress js content': function() {
+      var compressedBuffer = fs.readFileSync(fullPath(path.join('test', 'data', 'test1', 'public', 'javascripts', 'bundled', 'all.js.gz')));
+      zlib.gunzip(compressedBuffer, function(error, data) {
+        assert.equal(data.toString('utf8'), 'var x=0,y=0');
+      });
+    },
     teardown: function() {
       cleanBundles('test1');
     }
@@ -239,13 +247,13 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
     },
     'should bundle js into packages': function() {
       var cacheInfo = cacheData('test1');
-      assert.hasBundledFile('test1', 'javascripts', 'subset-' + cacheInfo['stylesheets/subset'] + '.js');
-      assert.hasBundledFile('test1', 'javascripts', 'all-' + cacheInfo['stylesheets/subset'] + '.js');
+      assert.hasBundledFile('test1', 'javascripts', 'subset-' + cacheInfo['javascripts/subset'] + '.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all-' + cacheInfo['javascripts/all'] + '.js');
     },
     'should bundle js into compressed packages': function() {
       var cacheInfo = cacheData('test1');
-      assert.hasBundledFile('test1', 'javascripts', 'subset-' + cacheInfo['stylesheets/subset'] + '.js.gz');
-      assert.hasBundledFile('test1', 'javascripts', 'all-' + cacheInfo['stylesheets/subset'] + '.js.gz');
+      assert.hasBundledFile('test1', 'javascripts', 'subset-' + cacheInfo['javascripts/subset'] + '.js.gz');
+      assert.hasBundledFile('test1', 'javascripts', 'all-' + cacheInfo['javascripts/all'] + '.js.gz');
     },
     teardown: function() {
       cleanBundles('test1');
@@ -302,9 +310,23 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       exec('rm -rf ' + fullPath('test/data/test2/public/images/two-*'));
     }
   }
+}).addBatch({
+  'should create deep directory structure': {
+    topic: withOptions('-r data/test4/public -c data/test4/assets.yml -g'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should create bundled files': function() {
+      assert.hasBundledFile('test4', 'stylesheets', 'desktop/all.css');
+      assert.hasBundledFile('test4', 'stylesheets', 'desktop/all.css.gz');
+    },
+    teardown: function() {
+      cleanBundles('test4');
+    }
+  }
 });
 
-exports.Suite = vows.describe('packaging all').addBatch({
+exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   'packaging only one selected package': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
     'should not give error': function(error, stdout) {
@@ -496,7 +518,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
       'data': function(error, data) {
         if (error) throw error;
 
-        assert.equal(["function factorial(n){return n==0?1:n*factorial(n-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
+        assert.equal(["function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
           data);
       }
     },

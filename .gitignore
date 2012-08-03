@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+examples/.assets.yml.json
 examples/public/javascripts/bundled
 examples/public/stylesheets/bundled
 examples/public/stylesheets/application.css
