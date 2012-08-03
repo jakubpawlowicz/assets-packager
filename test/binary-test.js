@@ -3,7 +3,8 @@ var vows = require('vows'),
   fs = require('fs'),
   path = require('path'),
   zlib = require('zlib'),
-  exec = require('child_process').exec;
+  exec = require('child_process').exec,
+  existsSync = fs.existsSync || path.existsSync;
 
 var withOptions = function(options) {
   return function() {
@@ -29,16 +30,16 @@ var cacheData = function(set) {
 };
 
 assert.hasFile = function(set, type, name) {
-  assert.isTrue(path.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
+  assert.isTrue(existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
 };
 assert.notHasFile = function(set, type, name) {
-  assert.isFalse(path.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
+  assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
 };
 assert.hasBundledFile = function(set, type, name) {
-  assert.isTrue(path.existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
+  assert.isTrue(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
 };
 assert.notHasBundledFile = function(set, type, name) {
-  assert.isFalse(path.existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
+  assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
 };
 
 exports.commandsSuite = vows.describe('binary commands').addBatch({
@@ -228,7 +229,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       assert.isNull(error);
     },
     'should create .assets.yml.json': function() {
-      assert.isTrue(path.existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
+      assert.isTrue(existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
     },
     'should bundle css into packages': function() {
       var cacheInfo = cacheData('test1');
@@ -289,8 +290,8 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       assert.isNull(error);
     },
     'should create stamped files': function() {
-      assert.isTrue(path.existsSync(fullPath('test/data/test2/public/images/one-77f77b6eaf58028e095681c21bad95a8.png')));
-      assert.isTrue(path.existsSync(fullPath('test/data/test2/public/images/two-77f77b6eaf58028e095681c21bad95a8.png')));
+      assert.isTrue(existsSync(fullPath('test/data/test2/public/images/one-77f77b6eaf58028e095681c21bad95a8.png')));
+      assert.isTrue(existsSync(fullPath('test/data/test2/public/images/two-77f77b6eaf58028e095681c21bad95a8.png')));
     },
     'should put stamped files into CSS file': {
       topic: function() {
