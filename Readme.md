@@ -18,6 +18,11 @@ And JavaScripts ones are
 
 ## Usage ##
 
+### What are the requirements? ###
+
+    node 0.6.0+ on *nix (fully tested on OS X 10.6+ and CentOS)
+    node 0.8.0+ on Windows
+
 ### How to install assets-packager? ###
 
     npm install -g assets-packager
