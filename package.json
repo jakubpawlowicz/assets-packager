@@ -18,9 +18,9 @@
     "seq": "0.3.x",
     "uglify-js": "1.2.x",
     "less": "1.x",
-    "clean-css": "0.5.x",
-    "enhance-css": "0.4.x",
-    "assets-expander": "0.3.x"
+    "clean-css": "0.6.x",
+    "enhance-css": "0.5.x",
+    "assets-expander": "0.4.x"
   },
   "devDependencies": {
     "vows": "*"

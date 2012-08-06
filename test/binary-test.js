@@ -6,9 +6,26 @@ var vows = require('vows'),
   exec = require('child_process').exec,
   existsSync = fs.existsSync || path.existsSync;
 
+var isWindows = process.platform == 'win32';
+var deleteDir = function(pathToDir) {
+  if (isWindows)
+    exec('rd /s /q ' + pathToDir);
+  else
+    exec('rm -rf ' + pathToDir);
+};
+var deleteFiles = function(filesWildcard) {
+  if (isWindows)
+    exec('del /q /f ' + filesWildcard);
+  else
+    exec('rm -rf ' + filesWildcard);
+};
+
 var withOptions = function(options) {
   return function() {
-    exec("cd test; ../bin/assetspkg " + (options || ''), this.callback);
+    if (isWindows)
+      exec("cd test & node ..\\bin\\assetspkg " + (options || ''), this.callback);
+    else
+      exec("cd test; ../bin/assetspkg " + (options || ''), this.callback);
   };
 };
 
@@ -17,11 +34,10 @@ var fullPath = function(suffix) {
 };
 
 var cleanBundles = function(set) {
-  exec('rm -rf ' + fullPath('test/data/' + set + '/public/javascripts/bundled'));
-  exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/bundled'));
-  exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/*.css'));
-  exec('rm -rf ' + fullPath('test/data/' + set + '/public/stylesheets/**/*.css'));
-  exec('rm -rf ' + fullPath('test/data/' + set + '/.assets.yml.json'));
+  deleteDir(fullPath('test/data/' + set + '/public/javascripts/bundled'));
+  deleteDir(fullPath('test/data/' + set + '/public/stylesheets/bundled'));
+  deleteFiles(fullPath('test/data/' + set + '/public/stylesheets/*.css'));
+  deleteFiles(fullPath('test/data/' + set + '/.assets.yml.json'));
 };
 
 var cacheData = function(set) {
@@ -87,7 +103,7 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
       assert.isEmpty(stdout);
     },
     'should print not found error': function(error, stdout, stderr) {
-      assert.include(stderr, 'test/fake" could not be found');
+      assert.include(stderr, path.join('test', 'fake') + '" could not be found');
     }
   },
   'non existing config file': {
@@ -99,7 +115,7 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
       assert.isEmpty(stdout);
     },
     'should print not found error': function(error, stdout, stderr) {
-      assert.include(stderr, 'data/fake.yml" is missing');
+      assert.include(stderr, path.join('data', 'fake.yml') + '" is missing');
     }
   },
   'version': {
@@ -263,7 +279,10 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'packaging only one file should update cached stamps': {
     topic: function() {
-      exec("echo '{\"test\":123}' > " + fullPath('/test/data/test1/.assets.yml.json'), this.callback);
+      if (isWindows)
+        fs.writeFile(fullPath('/test/data/test1/.assets.yml.json'), "{\"test\":123}", 'utf8', this.callback);
+      else
+        exec("echo '{\"test\":123}' > " + fullPath('/test/data/test1/.assets.yml.json'), this.callback);
     },
     'process with fake cache stamps file': {
       topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b -o all.css'),
@@ -307,8 +326,8 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
     },
     teardown: function() {
       cleanBundles('test2');
-      exec('rm -rf ' + fullPath('test/data/test2/public/images/one-*'));
-      exec('rm -rf ' + fullPath('test/data/test2/public/images/two-*'));
+      deleteFiles(fullPath('test/data/test2/public/images/one-*'));
+      deleteFiles(fullPath('test/data/test2/public/images/two-*'));
     }
   }
 }).addBatch({
@@ -323,6 +342,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
     },
     teardown: function() {
       cleanBundles('test4');
+      deleteFiles(fullPath('test/data/test4/public/stylesheets/desktop/*.css'));
     }
   }
 });
@@ -445,7 +465,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'compiling all javascripts': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o \\*.js'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o ' + (isWindows ? '' : '\\') + '*.js'),
     'should not give error': function(error, stdout) {
       assert.isNull(error);
     },
@@ -467,7 +487,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'compiling all stylesheets': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o \\*.css'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o *.css'),
     'should not give error': function(error, stdout) {
       assert.isNull(error);
     },

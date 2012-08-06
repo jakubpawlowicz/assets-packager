@@ -10,13 +10,15 @@ var fs = require('fs'),
   crypto = require('crypto'),
   cleanCSS = require('clean-css'),
   EnhanceCSS = require('enhance-css'),
-  AssetsExpander = require('assets-expander');
+  AssetsExpander = require('assets-expander'),
+  existsSync = fs.existsSync || path.existsSync;
 
 // Taken from MooTools 1.3
 var escapeRegExp = function(s) {
   return s.replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
 };
 var maxConcurrent = require('os').cpus().length;
+var isWindows = process.platform == 'win32';
 
 // Init optimist arguments parsing
 var options = {
@@ -73,26 +75,26 @@ if (argv.h || argv.help) {
   util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
   util.puts("  -h,  --help\t\tYou are staring at it!");
   util.puts("  -v,  --version\tAssets Packager version.");
-  process.exit(0);
+  return 0;
 }
 
 // Version
 if (argv.v || argv.version) {
   var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
   util.puts(JSON.parse(packageConfig).version);
-  process.exit(0);
+  return 0;
 }
 
 // Invalid config
-if (!path.existsSync(options.config)) {
+if (!existsSync(options.config)) {
   process.stderr.write('Configuration file "' + options.config + '" is missing!\n');
-  process.exit(0);
+  return 0;
 }
 
 // Invalid root path
-if (!path.existsSync(options.root)) {
+if (!existsSync(options.root)) {
   process.stderr.write('Root path "' + options.root + '" could not be found!\n');
-  process.exit(0);
+  return 0;
 }
 
 // Configuration seems to be fine. Proceed with packaging!
@@ -101,7 +103,7 @@ var expander = new AssetsExpander(options.config, { root: options.root }),
 
 // Cache boosters stamp file
 var cacheFile = path.join(path.dirname(options.config), "." + path.basename(options.config) + '.json'),
-  cacheData = path.existsSync(cacheFile) ?
+  cacheData = existsSync(cacheFile) ?
     JSON.parse(fs.readFileSync(cacheFile, 'utf8')) :
     {};
 
@@ -161,7 +163,7 @@ var makeDir = function(dir) {
   var toRoot = path.relative(options.root, dir),
     currentDir = options.root;
 
-  toRoot.split('/').forEach(function(part) {
+  toRoot.split(isWindows ? '\\' : '/').forEach(function(part) {
     currentDir = path.join(currentDir, part);
     if (!path.existsSync(currentDir))
       fs.mkdirSync(currentDir, 0770);
