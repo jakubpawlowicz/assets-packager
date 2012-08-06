@@ -65,13 +65,14 @@ options.assetHosts = argv.a || argv.assethosts || options.assetHosts;
 if (argv.h || argv.help) {
   util.puts("usage: assetspkg [options]\n");
   util.puts("options:");
-  util.puts("  -c,  --config\t\tPath to file with assets definitions (defaults to ./config/assets.yml)");
-  util.puts("  -r,  --root\t\tRoot directory, relative to all will be made (defaults to ./public)");
+  util.puts("  -c,  --config\t\tPath to file with bundles definition (defaults to ./config/assets.yml)");
+  util.puts("  -r,  --root\t\tRoot directory with assets directories (defaults to ./public)");
   util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
   util.puts("  -nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
+  util.puts("  -i,  --indent\t\tWhen using --nm, specify the indentation level in spaces.");
   util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
   util.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
-  util.puts("  -b,  --cacheboosters\tAdd MD5 hash to file names (aka hard cache boosters).");
+  util.puts("  -b,  --cacheboosters\tAdd MD5 hash to file names aka hard cache boosters (defaults to false).");
   util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
   util.puts("  -h,  --help\t\tYou are staring at it!");
   util.puts("  -v,  --version\tAssets Packager version.");

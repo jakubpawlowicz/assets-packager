@@ -24,12 +24,10 @@ And JavaScripts ones are
 
 ### Tl;dr. Give me a quick demo! ###
 
-OK. Clone this repo.
+OK. Here are commands to run
 
     git clone git@github.com:GoalSmashers/assets-packager.git
-
-Then open examples directory and run:
-
+    cd assets-packager/examples
     assetspkg -c assets.yml -g
 
 Now check _examples/public/javascripts/bundled_ and _examples/public/stylesheets/bundled_ for bundled code.
@@ -79,12 +77,15 @@ You'll probably want to put that command somewhere into your build/deploy script
 
 Options include:
 
+* -c - path to file with bundles definition (defaults to ./config/assets.yml)
+* -r - root directory with assets directories (defaults to ./public)
 * -g - create gzipped bundles (useful if your server supports serving precompressed files, like [nginx](http://wiki.nginx.org/NginxHttpGzipStaticModule))
-* -n - create alternate stylesheets bundles without inlined images (Explorer 6/7, I'm looking at you!)
-* -a - use asset hosts for image URLs, e.g _-a [assets0,assets1].yourdomain.com_
-* -o - narrow the set of bundles being build, e.g. _-o application.js_, _-o *.css_, or _-o public.css,application.css_
 * --nm - do not minify JS, only combine (use the `beautify` option of UglifyJS)
 * -i - when using --nm, specify the indentation level in spaces
+* -n - create alternate stylesheets bundles without inlined images (Explorer 6/7, I'm looking at you!)
+* -a - use asset hosts for image URLs, e.g _-a [assets0,assets1].yourdomain.com_
+* -b - add MD5 hash to bundled file names (aka hard cache boosters)
+* -o - narrow the set of bundles being build, e.g. _-o application.js_, _-o *.css_, or _-o public.css,application.css_
 
 ### The feature I want is not there! ###
 
@@ -94,13 +95,16 @@ Open an issue. Or better: fork the project, add the feature (don't forget about 
 
 First, install dependencies
 
-    npm install
-    npm install -g less@latest
+    npm i
 
-Then, run the specs
+Then, run the specs (on *nix):
 
     make test
-    
+
+or on Windows:
+
+    .\test.bat
+
 ## Contributors ##
 
 * Jean-Denis Vauguet (@chikamichi) - --nominifyjs and --indent options allow for combination-only processing.
