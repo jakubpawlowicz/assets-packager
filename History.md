@@ -1,3 +1,11 @@
+0.7.0 / 2012-08-07
+==================
+
+  * Fixed Windows support with tests.
+  * Fixed Readme and -h output.
+  * Added node requirement info.
+  * Added images embedding to example.
+
 0.6.0 / 2012-08-03
 ==================
 
