@@ -1,0 +1,4 @@
+stylesheets:
+  mobile/all: '*'
+javascripts:
+  mobile/all: '*'

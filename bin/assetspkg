@@ -21,28 +21,24 @@ var maxConcurrent = require('os').cpus().length;
 var isWindows = process.platform == 'win32';
 
 // Init optimist arguments parsing
-var options = {
-  root: 'public',
-  config: 'config/assets.yml',
-  noMinifyJS: false,
-  indentLevel: 0,
-  gzip: false,
-  noEmbedVersion: false,
-  only: undefined,
-  assetHosts: undefined,
-  cacheBoosters: false
-};
 
 var argv = require('optimist').argv;
 
-options.root = path.join(process.cwd(), argv.r || argv.root || options.root);
-options.config = path.join(process.cwd(), argv.c || argv.config || options.config);
-options.gzip = argv.g || argv.gzip || options.gzip;
-options.noMinifyJS = argv.nm || argv.nominifyjs || options.noMinifyJS;
-options.indentLevel = argv.i || argv.indent || options.indentLevel;
-options.noEmbedVersion = argv.n || argv.noembedversion || options.noEmbedVersion;
-options.only = argv.o || argv.only || options.only;
-options.cacheBoosters = argv.b || argv.cacheboosters || options.cacheBoosters;
+var options = {
+  assetHosts: argv.a || argv.assethosts || undefined,
+  cacheBoosters: argv.b || argv.cacheboosters || false,
+  config: path.join(process.cwd(), argv.c || argv.config || 'config/assets.yml'),
+  gzip: argv.g || argv.gzip || false,
+  indentLevel: argv.i || argv.indent || 0,
+  noEmbedVersion: argv.n || argv.noembedversion || false,
+  noMinifyJS: argv.nm || argv.nominifyjs || false,
+  only: argv.o || argv.only || undefined,
+  path: {
+    javascripts: argv.pj || argv['js-path'] || './javascripts',
+    stylesheets: argv.ps || argv['styles-path'] || './stylesheets'
+  },
+  root: path.join(process.cwd(), argv.r || argv.root || 'public')
+};
 
 if (options.only) {
   options.only = {
@@ -59,22 +55,23 @@ if (options.only) {
     hasJS: /\.js[,]?/.test(options.only)
   };
 }
-options.assetHosts = argv.a || argv.assethosts || options.assetHosts;
 
 // Usage
 if (argv.h || argv.help) {
   util.puts("usage: assetspkg [options]\n");
   util.puts("options:");
-  util.puts("  -c,  --config\t\tPath to file with bundles definition (defaults to ./config/assets.yml)");
-  util.puts("  -r,  --root\t\tRoot directory with assets directories (defaults to ./public)");
-  util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
-  util.puts("  -nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
-  util.puts("  -i,  --indent\t\tWhen using --nm, specify the indentation level in spaces.");
-  util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
   util.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
   util.puts("  -b,  --cacheboosters\tAdd MD5 hash to file names aka hard cache boosters (defaults to false).");
-  util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
+  util.puts("  -c,  --config\t\tPath to file with bundles definition (defaults to ./config/assets.yml)");
+  util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
   util.puts("  -h,  --help\t\tYou are staring at it!");
+  util.puts(" --nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
+  util.puts("  -i,  --indent\t\tWhen using --nm, specify the indentation level in spaces.");
+  util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
+  util.puts(" --pj, --js-path\tPath to JavaScript root directory (relative to --root option).");
+  util.puts(" --ps, --styles-path\tPath to Stylesheets root directory (relative to --root option).");
+  util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
+  util.puts("  -r,  --root\t\tRoot directory with assets directories (defaults to ./public)");
   util.puts("  -v,  --version\tAssets Packager version.");
   return 0;
 }
@@ -173,7 +170,11 @@ var makeDir = function(dir) {
 
 // Compiles LESS files to CSS
 var compileLessToCss = function(type, callback) {
-  var filesList = expander.processList(type + '/**/*', { type: 'less', root: options.root });
+  var lessPath = options.path[type] + '/**/*'
+  var filesList = expander.processList(lessPath, {
+    type: 'less',
+    root: options.root
+  });
   util.puts("Compiling " + filesList.length + " Less file(s) to CSS...");
 
   Seq.ap(filesList).
@@ -209,8 +210,11 @@ var compileLessToCss = function(type, callback) {
 
 // Processes group of files, outputting bundled & gzipped files
 var processGroup = function(type, group, callback) {
-  var filesList = expander.processGroup(type, group, { type: extensions[type] }),
-    groupPath = path.join(options.root, type, 'bundled', group) + '.' + extensions[type],
+  var filesList = expander.processGroup(type, group, {
+      type: extensions[type],
+      path: options.path[type]
+    }),
+    groupPath = path.join(options.root, options.path[type], 'bundled', group + '.' + extensions[type]),
     groupDir = path.dirname(groupPath);
 
   if (type == 'stylesheets') {

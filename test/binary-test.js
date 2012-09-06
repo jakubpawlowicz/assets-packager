@@ -529,6 +529,69 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 });
 
+exports.customPaths = vows.describe('custom paths').addBatch({
+  'one simple path': {
+    topic: withOptions('-r data/test-paths1/public -c data/test-paths1/assets.yml --ps ./css'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should bundle css': function() {
+      assert.hasBundledFile('test-paths1', 'css', 'all.css');
+    },
+    'should bundle css content': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test-paths1/public/css/bundled/all.css'), 'utf-8', this.callback);
+      },
+      'properly': function(error, data) {
+        assert.equal("a{color:red}", data);
+      }
+    },
+    'should bundle scripts': function() {
+      assert.hasBundledFile('test-paths1', 'javascripts', 'all.js');
+    },
+    teardown: function() {
+      deleteDir(fullPath('test/data/test-paths1/public/javascripts/bundled'));
+      deleteDir(fullPath('test/data/test-paths1/public/css/bundled'));
+      deleteFiles(fullPath('test/data/test-paths1/.assets.yml.json'));
+    }
+  },
+  'complex paths': {
+    topic: withOptions('-r data/test-paths2/public -c data/test-paths2/assets.yml --styles-path ./assets/css --js-path ./js -g'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should bundle css': function() {
+      assert.hasBundledFile('test-paths2', 'assets/css', 'mobile/all.css');
+      assert.hasBundledFile('test-paths2', 'assets/css', 'mobile/all.css.gz');
+    },
+    'should bundle css content': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test-paths2/public/assets/css/bundled/mobile/all.css'), 'utf-8', this.callback);
+      },
+      'properly': function(error, data) {
+        assert.equal("a{color:red}", data);
+      }
+    },
+    'should bundle scripts': function() {
+      assert.hasBundledFile('test-paths2', 'js', 'mobile/all.js');
+      assert.hasBundledFile('test-paths2', 'js', 'mobile/all.js.gz');
+    },
+    'should bundle js content': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test-paths2/public/js/bundled/mobile/all.js'), 'utf-8', this.callback);
+      },
+      'properly': function(error, data) {
+        assert.equal("var x=0", data);
+      }
+    },
+    teardown: function() {
+      deleteDir(fullPath('test/data/test-paths2/public/js/bundled'));
+      deleteDir(fullPath('test/data/test-paths2/public/assets/css/bundled'));
+      deleteFiles(fullPath('test/data/test-paths2/.assets.yml.json'));
+    }
+  }
+});
+
 exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
   'correct optimization': {
     topic: withOptions('-r data/test3/public -c data/test3/assets.yml'),
