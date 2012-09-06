@@ -1,3 +1,10 @@
+0.8.0 / 2012-09-06
+==================
+
+  * JS/CSS folders are now fully configurable (via --js-path and --styles-path options respectively).
+  * Bundled folders are created with mode 755 now.
+  * Line splitting is now optional (via -l option) from 80 characters used before.
+
 0.7.0 / 2012-08-07
 ==================
 
