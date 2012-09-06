@@ -13,15 +13,15 @@ var fs = require('fs'),
   AssetsExpander = require('assets-expander'),
   existsSync = fs.existsSync || path.existsSync;
 
+var maxConcurrent = require('os').cpus().length;
+var isWindows = process.platform == 'win32';
+
 // Taken from MooTools 1.3
 var escapeRegExp = function(s) {
   return s.replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
 };
-var maxConcurrent = require('os').cpus().length;
-var isWindows = process.platform == 'win32';
 
-// Init optimist arguments parsing
-
+// Parsing arguments
 var argv = require('optimist').argv;
 
 var options = {
@@ -30,6 +30,7 @@ var options = {
   config: path.join(process.cwd(), argv.c || argv.config || 'config/assets.yml'),
   gzip: argv.g || argv.gzip || false,
   indentLevel: argv.i || argv.indent || 0,
+  lineBreakAt: argv.l || argv['line-break-at'] || undefined,
   noEmbedVersion: argv.n || argv.noembedversion || false,
   noMinifyJS: argv.nm || argv.nominifyjs || false,
   only: argv.o || argv.only || undefined,
@@ -67,6 +68,7 @@ if (argv.h || argv.help) {
   util.puts("  -h,  --help\t\tYou are staring at it!");
   util.puts(" --nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
   util.puts("  -i,  --indent\t\tWhen using --nm, specify the indentation level in spaces.");
+  util.puts("  -l,  --line-break-at\tNumber of characters per line in optimized JavaScript (defaults to off which means no line splitting).");
   util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
   util.puts(" --pj, --js-path\tPath to JavaScript root directory (relative to --root option).");
   util.puts(" --ps, --styles-path\tPath to Stylesheets root directory (relative to --root option).");
@@ -283,7 +285,9 @@ var processGroup = function(type, group, callback) {
           ast = uglify.uglify.ast_mangle(ast);
           ast = uglify.uglify.ast_squeeze(ast);
           data = uglify.uglify.gen_code(ast);
-          data = uglify.uglify.split_lines(data, 80);
+          data = options.lineBreakAt ?
+            uglify.uglify.split_lines(data, options.lineBreakAt) :
+            data;
         }
 
         if (options.cacheBoosters) {

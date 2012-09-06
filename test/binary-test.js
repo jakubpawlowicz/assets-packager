@@ -606,7 +606,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
       'data': function(error, data) {
         if (error) throw error;
 
-        assert.equal(["function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).", "toString(),k=j.length;i<k;i++)console.log(j[i])"].join('\n'),
+        assert.equal("function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).toString(),k=j.length;i<k;i++)console.log(j[i])",
           data);
       }
     },
@@ -623,6 +623,42 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
     },
     teardown: function() {
       cleanBundles('test3');
+    }
+  }
+}).addBatch({
+  'no line breaking by default': {
+    topic: withOptions('-r data/test-js/public -c data/test-js/assets.yml'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should not break file at': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
+      },
+      'any character': function(error, data) {
+        assert.equal("var a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0", data);
+      }
+    },
+    teardown: function() {
+      cleanBundles('test-js');
+    }
+  }
+}).addBatch({
+  'correct line breaking': {
+    topic: withOptions('-r data/test-js/public -c data/test-js/assets.yml -l 10'),
+    'should not give error': function(error, stdout) {
+      assert.isNull(error);
+    },
+    'should break file at': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
+      },
+      '10 characters': function(error, data) {
+        assert.equal("var a=0,b=0\n,c=0,d=0,e=0\n,f=0,g=0,h=0\n,i=0,j=0", data);
+      }
+    },
+    teardown: function() {
+      cleanBundles('test-js');
     }
   }
 }).addBatch({
