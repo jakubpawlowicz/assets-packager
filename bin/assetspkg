@@ -164,7 +164,7 @@ var makeDir = function(dir) {
   toRoot.split(isWindows ? '\\' : '/').forEach(function(part) {
     currentDir = path.join(currentDir, part);
     if (!path.existsSync(currentDir))
-      fs.mkdirSync(currentDir, 0770);
+      fs.mkdirSync(currentDir, 0775);
   });
 };
 

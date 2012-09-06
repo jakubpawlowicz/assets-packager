@@ -52,7 +52,11 @@ assert.notHasFile = function(set, type, name) {
   assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
 };
 assert.hasBundledFile = function(set, type, name) {
-  assert.isTrue(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
+  var filePath = fullPath(path.join('test/data', set, 'public', type, 'bundled', name));
+  assert.isTrue(existsSync(filePath));
+
+  if (!isWindows)
+    assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
 };
 assert.notHasBundledFile = function(set, type, name) {
   assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
