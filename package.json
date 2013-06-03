@@ -13,6 +13,9 @@
   "bin": {
     "assetspkg": "./bin/assetspkg"
   },
+  "scripts": {
+    "test": "vows"
+  },
   "dependencies": {
     "optimist": "0.3.x",
     "seq": "0.3.x",
