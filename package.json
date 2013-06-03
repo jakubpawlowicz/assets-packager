@@ -9,11 +9,12 @@
     "url" : "http://github.com/GoalSmashers/assets-packager.git"
   },
   "version": "0.8.0",
-  "main": "index.js",
   "bin": {
     "assetspkg": "./bin/assetspkg"
   },
   "scripts": {
+    "check": "jshint .",
+    "prepublish": "jshint .",
     "test": "vows"
   },
   "dependencies": {
@@ -26,7 +27,8 @@
     "assets-expander": "0.5.x"
   },
   "devDependencies": {
-    "vows": "*"
+    "vows": "0.7.x",
+    "jshint": "2.1.x"
   },
   "engines": {
     "node": ">=0.6.0"

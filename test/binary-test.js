@@ -1,10 +1,10 @@
-var vows = require('vows'),
-  assert = require('assert'),
-  fs = require('fs'),
-  path = require('path'),
-  zlib = require('zlib'),
-  exec = require('child_process').exec,
-  existsSync = fs.existsSync || path.existsSync;
+var vows = require('vows');
+var assert = require('assert');
+var fs = require('fs');
+var path = require('path');
+var zlib = require('zlib');
+var exec = require('child_process').exec;
+var existsSync = fs.existsSync || path.existsSync;
 
 var isWindows = process.platform == 'win32';
 var deleteDir = function(pathToDir) {
@@ -21,11 +21,12 @@ var deleteFiles = function(filesWildcard) {
 };
 
 var withOptions = function(options) {
+  var command = isWindows ?
+    "cd test & node ..\\bin\\assetspkg " :
+    "cd test; ../bin/assetspkg ";
+
   return function() {
-    if (isWindows)
-      exec("cd test & node ..\\bin\\assetspkg " + (options || ''), this.callback);
-    else
-      exec("cd test; ../bin/assetspkg " + (options || ''), this.callback);
+    exec(command + (options || ''), this.callback);
   };
 };
 
@@ -65,44 +66,32 @@ assert.notHasBundledFile = function(set, type, name) {
 exports.commandsSuite = vows.describe('binary commands').addBatch({
   'no options': {
     topic: withOptions(),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should not produce output': function(error, stdout) {
       assert.isEmpty(stdout);
     },
     'should not give empty error': function(error, stdout, stderr) {
       assert.isNotNull(stderr);
     },
-    'should not give empty error': function(error, stdout, stderr) {
+    'should give meaningful error': function(error, stdout, stderr) {
       assert.include(stderr, 'is missing');
     }
   },
   'help option': {
     topic: withOptions('-h'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should give help': function(error, stdout) {
-      assert.include(stdout, 'usage:')
-      assert.include(stdout, 'options:')
+      assert.include(stdout, 'usage:');
+      assert.include(stdout, 'options:');
     }
   },
   'help option via --help': {
     topic: withOptions('--help'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should give help': function(error, stdout) {
-      assert.include(stdout, 'usage:')
-      assert.include(stdout, 'options:')
+      assert.include(stdout, 'usage:');
+      assert.include(stdout, 'options:');
     }
   },
   'non existing root path': {
     topic: withOptions('-r test/fake -c data/empty.yml'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should not give output': function(error, stdout) {
       assert.isEmpty(stdout);
     },
@@ -112,9 +101,6 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
   },
   'non existing config file': {
     topic: withOptions('-r test/fake -c data/fake.yml'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should not give output': function(error, stdout) {
       assert.isEmpty(stdout);
     },
@@ -124,9 +110,6 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
   },
   'version': {
     topic: withOptions('-v'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should give proper version': function(error, stdout) {
       var version = JSON.parse(fs.readFileSync('./package.json')).version;
       assert.include(stdout, version);
@@ -137,9 +120,6 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
 exports.packagingSuite = vows.describe('packaging all').addBatch({
   'packaging without gzipped version': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -171,9 +151,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'packaging with gzipped version': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -211,9 +188,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'packaging with gzipped and "no embed" versions': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -245,9 +219,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'packaging with hard cache boosters enabled': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should create .assets.yml.json': function() {
       assert.isTrue(existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
     },
@@ -290,9 +261,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
     },
     'process with fake cache stamps file': {
       topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b -o all.css'),
-      'should not give error': function(error, stdout) {
-        assert.isNull(error);
-      },
       'should not remove test entry': function() {
         var cacheInfo = cacheData('test1');
         assert.equal(cacheInfo.test, 123);
@@ -309,9 +277,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'should rename files when adding cache stamps': {
     topic: withOptions('-b -r data/test2/public -c data/test2/assets.yml'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should create stamped files': function() {
       assert.isTrue(existsSync(fullPath('test/data/test2/public/images/one-77f77b6eaf58028e095681c21bad95a8.png')));
       assert.isTrue(existsSync(fullPath('test/data/test2/public/images/two-77f77b6eaf58028e095681c21bad95a8.png')));
@@ -337,9 +302,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'should create deep directory structure': {
     topic: withOptions('-r data/test4/public -c data/test4/assets.yml -g'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should create bundled files': function() {
       assert.hasBundledFile('test4', 'stylesheets', 'desktop/all.css');
       assert.hasBundledFile('test4', 'stylesheets', 'desktop/all.css.gz');
@@ -354,9 +316,6 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   'packaging only one selected package': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -388,9 +347,6 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 }).addBatch({
   'packaging only two selected packages': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css'),
-    'should not give error': function(error, stdout, stderr) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -422,9 +378,6 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 }).addBatch({
   'packaging only three selected packages': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css,all.js'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -456,9 +409,6 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 }).addBatch({
   'not compiling less when packaging js packages only': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.js'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should not compile css to less': function() {
       assert.notHasFile('test1', 'stylesheets', 'one.css');
       assert.notHasFile('test1', 'stylesheets', 'two.css');
@@ -470,9 +420,6 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 }).addBatch({
   'compiling all javascripts': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o ' + (isWindows ? '' : '\\') + '*.js'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should not compile css to less': function() {
       assert.notHasFile('test1', 'stylesheets', 'one.css');
       assert.notHasFile('test1', 'stylesheets', 'two.css');
@@ -482,8 +429,8 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
       assert.notHasBundledFile('test1', 'stylesheets', 'all.css');
     },
     'should package all js files': function() {
-      assert.hasBundledFile('test1', 'javascripts', 'subset.js')
-      assert.hasBundledFile('test1', 'javascripts', 'all.js')
+      assert.hasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.hasBundledFile('test1', 'javascripts', 'all.js');
     },
     teardown: function() {
       cleanBundles('test1');
@@ -492,9 +439,6 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 }).addBatch({
   'compiling all stylesheets': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -o *.css'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -504,8 +448,8 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
       assert.hasBundledFile('test1', 'stylesheets', 'all.css');
     },
     'should package all js files': function() {
-      assert.notHasBundledFile('test1', 'javascripts', 'subset.js')
-      assert.notHasBundledFile('test1', 'javascripts', 'all.js')
+      assert.notHasBundledFile('test1', 'javascripts', 'subset.js');
+      assert.notHasBundledFile('test1', 'javascripts', 'all.js');
     },
     teardown: function() {
       cleanBundles('test1');
@@ -536,9 +480,6 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 exports.customPaths = vows.describe('custom paths').addBatch({
   'one simple path': {
     topic: withOptions('-r data/test-paths1/public -c data/test-paths1/assets.yml --ps ./css'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should bundle css': function() {
       assert.hasBundledFile('test-paths1', 'css', 'all.css');
     },
@@ -561,9 +502,6 @@ exports.customPaths = vows.describe('custom paths').addBatch({
   },
   'complex paths': {
     topic: withOptions('-r data/test-paths2/public -c data/test-paths2/assets.yml --styles-path ./assets/css --js-path ./js -g'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should bundle css': function() {
       assert.hasBundledFile('test-paths2', 'assets/css', 'mobile/all.css');
       assert.hasBundledFile('test-paths2', 'assets/css', 'mobile/all.css.gz');
@@ -615,10 +553,13 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/fonts.js'), 'utf-8', this.callback);
       },
       'data': function(error, data) {
-        if (error) throw error;
+        if (error)
+          throw error;
 
-        assert.equal("Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: \"88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77\"\n} ]\n};\n});",
-          data)
+        assert.equal(
+          "Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: \"88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77\"\n} ]\n};\n});",
+          data
+        );
       }
     },
     teardown: function() {
@@ -628,9 +569,6 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
 }).addBatch({
   'no line breaking by default': {
     topic: withOptions('-r data/test-js/public -c data/test-js/assets.yml'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should not break file at': {
       topic: function() {
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
@@ -646,9 +584,6 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
 }).addBatch({
   'correct line breaking': {
     topic: withOptions('-r data/test-js/public -c data/test-js/assets.yml -l 10'),
-    'should not give error': function(error, stdout) {
-      assert.isNull(error);
-    },
     'should break file at': {
       topic: function() {
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
@@ -669,7 +604,8 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/optimizations.js'), 'utf-8', this.callback);
       },
       'data': function(error, data) {
-        if (error) throw error;
+        if (error)
+          throw error;
 
         assert.equal(data, "function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}");
       }

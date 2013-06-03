@@ -2,6 +2,8 @@
 ==================
 
   * Added `npm test` instead of custom Makefile.
+  * Added `npm run check` running JSHint on project sources.
+  * Extracted packaging functionality into `lib/packager.js`.
 
 0.8.0 / 2012-09-06
 ==================
