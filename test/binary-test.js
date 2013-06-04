@@ -57,7 +57,7 @@ assert.hasBundledFile = function(set, type, name) {
   assert.isTrue(existsSync(filePath));
 
   if (!isWindows)
-    assert.equal(fs.existsSync ? 16893 : 16877, fs.statSync(path.dirname(filePath)).mode);
+    assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
 };
 assert.notHasBundledFile = function(set, type, name) {
   assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
