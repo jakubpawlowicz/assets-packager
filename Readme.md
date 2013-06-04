@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/GoalSmashers/assets-packager.png)](http://travis-ci.org/GoalSmashers/assets-packager)
+
 ## What is assets-packager? ##
 
 Assets-packager is a node.js-based tool for compiling, minifying, and packaging CSS and JavaScript assets into production-ready packages.
