@@ -89,6 +89,7 @@ Options include:
 * -g - create gzipped bundles (useful if your server supports serving precompressed files, like [nginx](http://wiki.nginx.org/NginxHttpGzipStaticModule))
 * --nm - do not minify JS, only combine (use the `beautify` option of UglifyJS)
 * -i - when using --nm, specify the indentation level in spaces
+* -j - number of concurrent tasks executed at once (defaults to number of logical CPUs)
 * -n - create alternate stylesheets bundles without inlined images (Explorer 6/7, I'm looking at you!)
 * -a - use asset hosts for image URLs, e.g _-a [assets0,assets1].yourdomain.com_
 * -b - add MD5 hash to bundled file names (aka hard cache boosters)

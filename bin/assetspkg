@@ -16,6 +16,7 @@ var argv = require('optimist').argv;
 var options = {
   assetHosts: argv.a || argv.assethosts || undefined,
   cacheBoosters: argv.b || argv.cacheboosters || false,
+  concurrent: argv.j || argv.concurrent || require('os').cpus().length,
   config: path.join(process.cwd(), argv.c || argv.config || 'config/assets.yml'),
   gzip: argv.g || argv.gzip || false,
   indentLevel: argv.i || argv.indent || 0,
@@ -55,13 +56,14 @@ if (argv.h || argv.help) {
   util.puts("  -c,  --config\t\tPath to file with bundles definition (defaults to ./config/assets.yml)");
   util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
   util.puts("  -h,  --help\t\tYou are staring at it!");
-  util.puts(" --nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
   util.puts("  -i,  --indent\t\tWhen using --nm, specify the indentation level in spaces.");
+  util.puts("  -j,  --concurrent\tNumber of concurrent tasks executed at once (defaults to number of logical CPUs)");
   util.puts("  -l,  --line-break-at\tNumber of characters per line in optimized JavaScript (defaults to off which means no line splitting).");
+  util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
+  util.puts(" --nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
   util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
   util.puts(" --pj, --js-path\tPath to JavaScript root directory (relative to --root option).");
   util.puts(" --ps, --styles-path\tPath to Stylesheets root directory (relative to --root option).");
-  util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
   util.puts("  -r,  --root\t\tRoot directory with assets directories (defaults to ./public)");
   util.puts("  -v,  --version\tAssets Packager version.");
   return 0;

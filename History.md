@@ -5,6 +5,7 @@
   * Added `npm run check` running JSHint on project sources.
   * Extracted packaging functionality into `lib/packager.js`.
   * Updated dependencies to last available versions.
+  * Added -j option for specifying number of concurrent tasks executed at once.
 
 0.8.0 / 2012-09-06
 ==================
