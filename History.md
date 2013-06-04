@@ -1,4 +1,4 @@
-0.9.0 / 2013-06-xx
+0.9.0 / 2013-06-04
 ==================
 
   * Added `npm test` instead of custom Makefile.
