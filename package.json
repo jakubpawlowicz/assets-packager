@@ -18,12 +18,12 @@
     "test": "vows"
   },
   "dependencies": {
-    "optimist": "0.3.x",
+    "optimist": "0.5.x",
     "seq": "0.3.x",
     "uglify-js": "1.2.x",
     "less": "1.x",
-    "clean-css": "0.6.x",
-    "enhance-css": "0.5.x",
+    "clean-css": "1.0.x",
+    "enhance-css": "0.6.x",
     "assets-expander": "0.5.x"
   },
   "devDependencies": {
