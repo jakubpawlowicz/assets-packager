@@ -1,3 +1,4 @@
+[![NPM version](https://badge.fury.io/js/assets-packager.png)](http://badge.fury.io/js/assets-packager)
 [![Build Status](https://secure.travis-ci.org/GoalSmashers/assets-packager.png)](http://travis-ci.org/GoalSmashers/assets-packager)
 
 ## What is assets-packager? ##
