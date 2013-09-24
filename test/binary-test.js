@@ -62,6 +62,13 @@ assert.hasBundledFile = function(set, type, name) {
 assert.notHasBundledFile = function(set, type, name) {
   assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
 };
+assert.hasBundledFileIn = function(set, type, name, bundledPath) {
+  var filePath = fullPath(path.join('test/data', set, 'public', bundledPath, name));
+  assert.isTrue(existsSync(filePath));
+
+  if (!isWindows)
+    assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
+};
 
 exports.commandsSuite = vows.describe('binary commands').addBatch({
   'no options': {
@@ -673,6 +680,67 @@ exports.assetsHosts = vows.describe('assets hosts').addBatch({
     },
     teardown: function() {
       cleanBundles('test2');
+    }
+  }
+});
+
+exports.bundledPaths = vows.describe('bundled paths').addBatch({
+  'simple packaging': {
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed'),
+    'should bundle css': function() {
+      assert.hasBundledFileIn('test-paths3', 'css', 'all.css', 'compressed');
+    },
+    'should bundle scripts': function() {
+      assert.hasBundledFileIn('test-paths3', 'javascripts', 'all.js', 'compressed');
+    },
+    teardown: function() {
+      deleteDir(fullPath('test/data/test-paths3/public/compressed'));
+      deleteFiles(fullPath('test/data/test-paths3/.assets.yml.json'));
+    }
+  },
+  'packaging with compression enabled': {
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed -g'),
+    'should bundle css': function() {
+      assert.hasBundledFileIn('test-paths3', 'css', 'all.css', 'compressed');
+      assert.hasBundledFileIn('test-paths3', 'css', 'all.css.gz', 'compressed');
+    },
+    'should bundle scripts': function() {
+      assert.hasBundledFileIn('test-paths3', 'javascripts', 'all.js', 'compressed');
+      assert.hasBundledFileIn('test-paths3', 'javascripts', 'all.js.gz', 'compressed');
+    },
+    teardown: function() {
+      deleteDir(fullPath('test/data/test-paths3/public/compressed'));
+      deleteFiles(fullPath('test/data/test-paths3/.assets.yml.json'));
+    }
+  },
+  'packaging with hard cache boosters enabled': {
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed -b'),
+    'should bundle css': function() {
+      var cacheInfo = cacheData('test-paths3');
+      assert.hasBundledFileIn('test-paths3', 'stylesheets', 'all-' + cacheInfo['stylesheets/all'] + '.css', 'compressed');
+    },
+    'should bundle scripts': function() {
+      var cacheInfo = cacheData('test-paths3');
+      assert.hasBundledFileIn('test-paths3', 'javascripts', 'all-' + cacheInfo['javascripts/all'] + '.js', 'compressed');
+    },
+    teardown: function() {
+      deleteDir(fullPath('test/data/test-paths3/public/compressed'));
+      deleteFiles(fullPath('test/data/test-paths3/.assets.yml.json'));
+    }
+  },
+  'packaging with hard cache boosters and compression enabled': {
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed -g -b'),
+    'should bundle css': function() {
+      var cacheInfo = cacheData('test-paths3');
+      assert.hasBundledFileIn('test-paths3', 'stylesheets', 'all-' + cacheInfo['stylesheets/all'] + '.css.gz', 'compressed');
+    },
+    'should bundle scripts': function() {
+      var cacheInfo = cacheData('test-paths3');
+      assert.hasBundledFileIn('test-paths3', 'javascripts', 'all-' + cacheInfo['javascripts/all'] + '.js.gz', 'compressed');
+    },
+    teardown: function() {
+      deleteDir(fullPath('test/data/test-paths3/public/compressed'));
+      deleteFiles(fullPath('test/data/test-paths3/.assets.yml.json'));
     }
   }
 });
