@@ -31,6 +31,11 @@ var options = {
   root: path.join(process.cwd(), argv.r || argv.root || 'public')
 };
 
+options.bundledPath = {
+  javascripts: argv.bj || argv['js-bundled'] || path.join(options.path.javascripts, '/bundled'),
+  stylesheets: argv.bs || argv['styles-bundled'] || path.join(options.path.stylesheets, '/bundled')
+};
+
 if (options.only) {
   options.only = {
     list: options.only.split(',').map(function(template) {
@@ -53,6 +58,8 @@ if (argv.h || argv.help) {
   util.puts("options:");
   util.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
   util.puts("  -b,  --cacheboosters\tAdd MD5 hash to file names aka hard cache boosters (defaults to false).");
+  util.puts(" --bj, --js-bundled\tPath to JavaScript root directory (relative to --root option).");
+  util.puts(" --bs, --styles-bundled\tPath to Stylesheets root directory (relative to --root option).");
   util.puts("  -c,  --config\t\tPath to file with bundles definition (defaults to ./config/assets.yml)");
   util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
   util.puts("  -h,  --help\t\tYou are staring at it!");
