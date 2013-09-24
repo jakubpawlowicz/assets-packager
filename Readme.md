@@ -105,13 +105,9 @@ First, install dependencies
 
     npm i
 
-Then, run the specs (on *nix):
+Then, run the specs:
 
-    make test
-
-or on Windows:
-
-    .\test.bat
+    npm test
 
 ## Contributors ##
 
