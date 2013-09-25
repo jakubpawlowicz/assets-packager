@@ -22,7 +22,7 @@
     "seq": "0.3.x",
     "uglify-js": "1.2.x",
     "less": "1.x",
-    "clean-css": "1.0.x",
+    "clean-css": "1.1.x",
     "enhance-css": "0.6.x",
     "assets-expander": "0.5.x"
   },

@@ -1,3 +1,9 @@
+0.10.0 / 2013-xx-xx (UNRELEASED)
+==================
+
+  * Adds customizable paths to bundled files.
+  * Updates clean-css dependency to 1.1.x.
+
 0.9.0 / 2013-06-04
 ==================
 
