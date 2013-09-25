@@ -1,15 +1,19 @@
-[![NPM version](https://badge.fury.io/js/assets-packager.png)](http://badge.fury.io/js/assets-packager)
+[![NPM version](https://badge.fury.io/js/assets-packager.png)](https://badge.fury.io/js/assets-packager)
+[![Build Status](https://secure.travis-ci.org/GoalSmashers/assets-packager.png)](https://travis-ci.org/GoalSmashers/assets-packager)
+[![Dependency Status](https://gemnasium.com/GoalSmashers/assets-packager.png)](https://gemnasium.com/GoalSmashers/assets-packager)
 
 ## What is assets-packager? ##
 
-Assets-packager is a node.js-based tool for compiling, minifying, and packaging CSS and JavaScript assets into production-ready packages.
+Assets-packager is a node.js-based tool for compiling, minifying, and packaging
+CSS and JavaScript assets into production-ready packages.
 
 CSS bundles are created from assets which are
 
 * compiled from [LESS](https://github.com/cloudhead/less.js) templates (optional)
 * minified using [clean-css](https://github.com/GoalSmashers/clean-css)
 * bundled
-* preprocessed via [enhance-css](https://github.com/GoalSmashers/enhance-css) (inline images, asset hosts, etc)
+* preprocessed via [enhance-css](https://github.com/GoalSmashers/enhance-css)
+  (inline images, asset hosts, etc)
 * packaged (and optionally precompressed)
 
 And JavaScripts ones are
@@ -22,20 +26,26 @@ And JavaScripts ones are
 
 ### What are the requirements? ###
 
-    node 0.6.0+ on *nix (fully tested on OS X 10.6+ and CentOS)
-    node 0.8.0+ on Windows
+```
+node 0.6.0+ on *nix (fully tested on OS X 10.6+ and CentOS)
+node 0.8.0+ on Windows
+```
 
 ### How to install assets-packager? ###
 
-    npm install -g assets-packager
+```
+npm install -g assets-packager
+```
 
 ### Tl;dr. Give me a quick demo! ###
 
 OK. Here are commands to run
 
-    git clone git@github.com:GoalSmashers/assets-packager.git
-    cd assets-packager/examples
-    assetspkg -c assets.yml -g
+```bash
+git clone git@github.com:GoalSmashers/assets-packager.git
+cd assets-packager/examples
+assetspkg -c assets.yml -g
+```
 
 Now check _examples/public/javascripts/bundled_ and _examples/public/stylesheets/bundled_ for bundled code.
 That's it!
@@ -44,7 +54,8 @@ That's it!
 
 You should have just witnessed it by yourself. :-)
 
-We use it on our production servers at [GoalSmashers.com](http://goalsmashers.com) and it builds 20 CSS and 15 JavaScript bundles from hundreds of assets in around 15 seconds.
+We use it on our production servers at [GoalSmashers.com](http://goalsmashers.com)
+and it builds 20 CSS and 15 JavaScript bundles from hundreds of assets in around 15 seconds.
 
 So yes, it is fast!
 
@@ -60,27 +71,33 @@ First of all it assumes you have Rails-like directory structure for your assets,
 
 Then it also needs a configuration file (here we name it assets.yml) with a definition of JS/CSS bundles, e.g:
 
-    # stylesheets
-    stylesheets:
-      application: 'reset,grid,base,application'
-    # javascripts
-    javascripts:
-      application:
-        - 'vendor/jquery'
-        - 'application,helpers'
+```
+# stylesheets
+stylesheets:
+  application: 'reset,grid,base,application'
+# javascripts
+javascripts:
+  application:
+    - 'vendor/jquery'
+    - 'application,helpers'
+```
 
 We recommend placing it somewhere else than in your _public_ folder (could be _config_ in case of Rails).
 
 Now you can bundle all these packages with a single command:
 
-    assetspkg -c assets.yml
+```
+assetspkg -c assets.yml
+```
 
 All the packages go into _public/javascripts/bundled_ and _public/stylesheets/bundled_.
 You'll probably want to put that command somewhere into your build/deploy script.
 
 ### How to configure it? ###
 
-    assetspkg -h
+```
+assetspkg -h
+```
 
 Options include:
 
@@ -97,22 +114,27 @@ Options include:
 
 ### The feature I want is not there! ###
 
-Open an issue. Or better: fork the project, add the feature (don't forget about tests!) and send a pull request.
+Open an issue. Or better: fork the project, add the feature
+(don't forget about tests!) and send a pull request.
 
 ### How to test assets-packager? ###
 
 First, install dependencies
 
-    npm i
+```
+npm install
+```
 
 Then, run the specs:
 
-    npm test
+```
+npm test
+```
 
 ## Contributors ##
 
-* Jean-Denis Vauguet (@chikamichi) - --nominifyjs and --indent options allow for combination-only processing.
+* Jean-Denis Vauguet [@chikamichi](https://github.com/chikamichi) - `--nominifyjs` and `--indent` options allow for combination-only processing.
 
 ## License ##
 
-Assets-packager is released under the MIT license.
+Assets-packager is released under the [MIT License](https://github.com/GoalSmashers/assets-packager/blob/master/LICENSE).
