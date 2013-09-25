@@ -12,6 +12,13 @@
   "bin": {
     "assetspkg": "./bin/assetspkg"
   },
+  "files": [
+    "bin",
+    "lib",
+    "History.md",
+    "index.js",
+    "LICENSE"
+  ],
   "scripts": {
     "check": "jshint .",
     "prepublish": "jshint .",
