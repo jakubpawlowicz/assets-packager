@@ -27,8 +27,28 @@
     "assets-expander": "0.5.x"
   },
   "devDependencies": {
-    "vows": "0.7.x",
-    "jshint": "2.1.x"
+    "jshint": "2.1.11",
+    "vows": "0.7.x"
+  },
+  "jshintConfig": {
+    "browser": false,
+    "camelcase": true,
+    "curly": false,
+    "eqeqeq": false,
+    "eqnull": false,
+    "immed": true,
+    "latedef": true,
+    "maxerr": 100,
+    "multistr": true,
+    "noarg": true,
+    "node": true,
+    "plusplus": false,
+    "quotmark": "true",
+    "regexp": false,
+    "strict": false,
+    "trailing": true,
+    "undef": true,
+    "unused": true
   },
   "engines": {
     "node": ">=0.6.0"
