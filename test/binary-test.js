@@ -86,15 +86,15 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
   'help option': {
     topic: withOptions('-h'),
     'should give help': function(error, stdout) {
-      assert.include(stdout, 'usage:');
-      assert.include(stdout, 'options:');
+      assert.include(stdout, 'Usage:');
+      assert.include(stdout, 'Options:');
     }
   },
   'help option via --help': {
     topic: withOptions('--help'),
     'should give help': function(error, stdout) {
-      assert.include(stdout, 'usage:');
-      assert.include(stdout, 'options:');
+      assert.include(stdout, 'Usage:');
+      assert.include(stdout, 'Options:');
     }
   },
   'non existing root path': {

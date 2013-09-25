@@ -4,36 +4,57 @@ var fs = require('fs');
 var path = require('path');
 var util = require('util');
 var existsSync = fs.existsSync || path.existsSync;
+var commands = require('commander');
+
+var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
+var buildVersion = JSON.parse(packageConfig).version;
 
 // Taken from MooTools 1.3
 var escapeRegExp = function(s) {
   return s.replace(/([-.*+?^${}()|[\]\/\\])/g, '\\$1');
 };
 
-// Parsing arguments
-var argv = require('optimist').argv;
+commands
+  .version(buildVersion, '-v, --version')
+  .usage('[options]')
+  .option('-a, --assethosts [list]', 'assets host to use in CSS bundles (defaults to none)')
+  .option('-b, --cacheboosters', 'add MD5 hash to file names aka hard cache boosters (defaults to false)')
+  .option('--bj, --js-bundled [path]', 'path to JavaScript root directory (relative to --root option)')
+  .option('--bs, --styles-bundled [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('-c, --config [path]', 'path to file with bundles definition (defaults to ./config/assets.yml)')
+  .option('-g, --gzip', 'gzip packaged files (defaults to false)')
+  .option('-i, --indent [value]', 'indentation level in spaces when used with --nm switch.', parseInt)
+  .option('-j, --concurrent [value]', 'number of concurrent tasks executed at once (defaults to number of logical CPUs)', parseInt)
+  .option('-l, --line-break-at [value]', 'number of characters per line in optimized JavaScript (defaults to off which means no line splitting).', parseInt)
+  .option('-n, --noembedversion', 'create a version of packaged CSS without embedded images (defaults to false)')
+  .option('--nm, --nominifyjs', 'combine JS files without minification (defaults to false)')
+  .option('-o, --only [list]', 'package only given assets group (or groups if separated by comma)')
+  .option('--pj, --js-path [path]', 'path to JavaScript root directory (relative to --root option)')
+  .option('--ps, --styles-path [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('-r, --root [path]', 'root directory with assets directories (defaults to ./public)')
+  .parse(process.argv);
 
 var options = {
-  assetHosts: argv.a || argv.assethosts || undefined,
-  cacheBoosters: argv.b || argv.cacheboosters || false,
-  concurrent: argv.j || argv.concurrent || require('os').cpus().length,
-  config: path.join(process.cwd(), argv.c || argv.config || 'config/assets.yml'),
-  gzip: argv.g || argv.gzip || false,
-  indentLevel: argv.i || argv.indent || 0,
-  lineBreakAt: argv.l || argv['line-break-at'] || undefined,
-  noEmbedVersion: argv.n || argv.noembedversion || false,
-  noMinifyJS: argv.nm || argv.nominifyjs || false,
-  only: argv.o || argv.only || undefined,
+  assetHosts: commands.assethosts,
+  cacheBoosters: commands.cacheboosters,
+  concurrent: commands.concurrent || require('os').cpus().length,
+  config: path.join(process.cwd(), commands.config || 'config/assets.yml'),
+  gzip: commands.gzip,
+  indentLevel: commands.indent,
+  lineBreakAt: commands.lineBreakAt,
+  noEmbedVersion: commands.noembedversion,
+  noMinifyJS: commands.nominifyjs,
+  only: commands.only,
   path: {
-    javascripts: argv.pj || argv['js-path'] || './javascripts',
-    stylesheets: argv.ps || argv['styles-path'] || './stylesheets'
+    javascripts: commands.jsPath || './javascripts',
+    stylesheets: commands.stylesPath || './stylesheets'
   },
-  root: path.join(process.cwd(), argv.r || argv.root || 'public')
+  root: path.join(process.cwd(), commands.root || 'public')
 };
 
 options.bundledPath = {
-  javascripts: argv.bj || argv['js-bundled'] || path.join(options.path.javascripts, '/bundled'),
-  stylesheets: argv.bs || argv['styles-bundled'] || path.join(options.path.stylesheets, '/bundled')
+  javascripts: commands.jsBundled || path.join(options.path.javascripts, '/bundled'),
+  stylesheets: commands.stylesBundled || path.join(options.path.stylesheets, '/bundled')
 };
 
 if (options.only) {
@@ -52,49 +73,15 @@ if (options.only) {
   };
 }
 
-// Usage
-if (argv.h || argv.help) {
-  util.puts("usage: assetspkg [options]\n");
-  util.puts("options:");
-  util.puts("  -a,  --assethosts\tAssets host to use in CSS bundles (defaults to none).");
-  util.puts("  -b,  --cacheboosters\tAdd MD5 hash to file names aka hard cache boosters (defaults to false).");
-  util.puts(" --bj, --js-bundled\tPath to JavaScript root directory (relative to --root option).");
-  util.puts(" --bs, --styles-bundled\tPath to Stylesheets root directory (relative to --root option).");
-  util.puts("  -c,  --config\t\tPath to file with bundles definition (defaults to ./config/assets.yml)");
-  util.puts("  -g,  --gzip\t\tGzip packaged files (defaults to false).");
-  util.puts("  -h,  --help\t\tYou are staring at it!");
-  util.puts("  -i,  --indent\t\tWhen using --nm, specify the indentation level in spaces.");
-  util.puts("  -j,  --concurrent\tNumber of concurrent tasks executed at once (defaults to number of logical CPUs)");
-  util.puts("  -l,  --line-break-at\tNumber of characters per line in optimized JavaScript (defaults to off which means no line splitting).");
-  util.puts("  -n,  --noembedversion\tCreate a version of packaged CSS without embedded images (defaults to false).");
-  util.puts(" --nm, --nominifyjs\tOnly combine JS files, do not minify them (defaults to false).");
-  util.puts("  -o,  --only\t\tPackage only given assets group (or groups if separated by comma).");
-  util.puts(" --pj, --js-path\tPath to JavaScript root directory (relative to --root option).");
-  util.puts(" --ps, --styles-path\tPath to Stylesheets root directory (relative to --root option).");
-  util.puts("  -r,  --root\t\tRoot directory with assets directories (defaults to ./public)");
-  util.puts("  -v,  --version\tAssets Packager version.");
-  return 0;
-}
-
-// Version
-if (argv.v || argv.version) {
-  var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
-  util.puts(JSON.parse(packageConfig).version);
-  return 0;
-}
-
-// Invalid config
 if (!existsSync(options.config)) {
   process.stderr.write('Configuration file "' + options.config + '" is missing!\n');
   return 0;
 }
 
-// Invalid root path
 if (!existsSync(options.root)) {
   process.stderr.write('Root path "' + options.root + '" could not be found!\n');
   return 0;
 }
 
-// Configuration seems to be fine. Proceed with packaging!
 var Packager = require('../index');
 new Packager(options).process();
