@@ -22,8 +22,8 @@ var deleteFiles = function(filesWildcard) {
 
 var withOptions = function(options) {
   var command = isWindows ?
-    "cd test & node ..\\bin\\assetspkg " :
-    "cd test; ../bin/assetspkg ";
+    'cd test & node ..\\bin\\assetspkg ' :
+    'cd test; ../bin/assetspkg ';
 
   return function() {
     exec(command + (options || ''), this.callback);
@@ -262,9 +262,9 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
   'packaging only one file should update cached stamps': {
     topic: function() {
       if (isWindows)
-        fs.writeFile(fullPath('/test/data/test1/.assets.yml.json'), "{\"test\":123}", 'utf8', this.callback);
+        fs.writeFile(fullPath('/test/data/test1/.assets.yml.json'), '{"test":123}', 'utf8', this.callback);
       else
-        exec("echo '{\"test\":123}' > " + fullPath('/test/data/test1/.assets.yml.json'), this.callback);
+        exec('echo "{\'test\':123}" > ' + fullPath('/test/data/test1/.assets.yml.json'), this.callback);
     },
     'process with fake cache stamps file': {
       topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b -o all.css'),
@@ -294,10 +294,10 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
         fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all-' + cacheInfo['stylesheets/all'] + '.css'), 'utf-8', this.callback);
       },
       'one.png': function(error, data) {
-        assert.include(data, "/images/one-77f77b6eaf58028e095681c21bad95a8.png");
+        assert.include(data, '/images/one-77f77b6eaf58028e095681c21bad95a8.png');
       },
       'two.png': function(error, data) {
-        assert.include(data, "/images/two-77f77b6eaf58028e095681c21bad95a8.png");
+        assert.include(data, '/images/two-77f77b6eaf58028e095681c21bad95a8.png');
       }
     },
     teardown: function() {
@@ -466,7 +466,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   'not showing processing JS when packaging CSS only': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
     'should not output processing JS': function(error, stdout) {
-      assert.equal(-1, stdout.indexOf("Processing type 'javascripts'"));
+      assert.equal(-1, stdout.indexOf('Processing type "javascripts"'));
     },
     teardown: function() {
       cleanBundles('test1');
@@ -476,7 +476,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   'not showing processing CSS when packaging JS only': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.js'),
     'should not output processing CSS': function(error, stdout) {
-      assert.equal(-1, stdout.indexOf("Processing type 'stylesheets'"));
+      assert.equal(-1, stdout.indexOf('Processing type "stylesheets"'));
     },
     teardown: function() {
       cleanBundles('test1');
@@ -495,7 +495,7 @@ exports.customPaths = vows.describe('custom paths').addBatch({
         fs.readFile(fullPath('test/data/test-paths1/public/css/bundled/all.css'), 'utf-8', this.callback);
       },
       'properly': function(error, data) {
-        assert.equal("a{color:red}", data);
+        assert.equal('a{color:red}', data);
       }
     },
     'should bundle scripts': function() {
@@ -518,7 +518,7 @@ exports.customPaths = vows.describe('custom paths').addBatch({
         fs.readFile(fullPath('test/data/test-paths2/public/assets/css/bundled/mobile/all.css'), 'utf-8', this.callback);
       },
       'properly': function(error, data) {
-        assert.equal("a{color:red}", data);
+        assert.equal('a{color:red}', data);
       }
     },
     'should bundle scripts': function() {
@@ -530,7 +530,7 @@ exports.customPaths = vows.describe('custom paths').addBatch({
         fs.readFile(fullPath('test/data/test-paths2/public/js/bundled/mobile/all.js'), 'utf-8', this.callback);
       },
       'properly': function(error, data) {
-        assert.equal("var x=0", data);
+        assert.equal('var x=0', data);
       }
     },
     teardown: function() {
@@ -549,9 +549,10 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/optimizations.js'), 'utf-8', this.callback);
       },
       'data': function(error, data) {
-        if (error) throw error;
+        if (error)
+          throw error;
 
-        assert.equal("function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).toString(),k=j.length;i<k;i++)console.log(j[i])",
+        assert.equal('function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).toString(),k=j.length;i<k;i++)console.log(j[i])',
           data);
       }
     },
@@ -564,7 +565,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
           throw error;
 
         assert.equal(
-          "Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: \"88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77\"\n} ]\n};\n});",
+          'Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: "88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77"\n} ]\n};\n});',
           data
         );
       }
@@ -581,7 +582,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
       },
       'any character': function(error, data) {
-        assert.equal("var a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0", data);
+        assert.equal('var a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0', data);
       }
     },
     teardown: function() {
@@ -596,7 +597,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
       },
       '10 characters': function(error, data) {
-        assert.equal("var a=0,b=0\n,c=0,d=0,e=0\n,f=0,g=0,h=0\n,i=0,j=0", data);
+        assert.equal('var a=0,b=0\n,c=0,d=0,e=0\n,f=0,g=0,h=0\n,i=0,j=0', data);
       }
     },
     teardown: function() {
@@ -614,7 +615,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         if (error)
           throw error;
 
-        assert.equal(data, "function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}");
+        assert.equal(data, 'function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}');
       }
     },
     teardown: function() {
@@ -637,8 +638,8 @@ exports.assetsHosts = vows.describe('assets hosts').addBatch({
         assert.include(data, 'two.png');
       },
       'should not add assets hosts': function(error, data) {
-        assert.include(data, "url(/images/one.png");
-        assert.include(data, "url(/images/two.png");
+        assert.include(data, 'url(/images/one.png');
+        assert.include(data, 'url(/images/two.png');
       }
     },
     teardown: function() {
@@ -659,8 +660,8 @@ exports.assetsHosts = vows.describe('assets hosts').addBatch({
         assert.include(data, 'two.png');
       },
       'should add assets hosts': function(error, data) {
-        assert.include(data, "url(//assets0.example.com/images/one.png");
-        assert.include(data, "url(//assets1.example.com/images/two.png");
+        assert.include(data, 'url(//assets0.example.com/images/one.png');
+        assert.include(data, 'url(//assets1.example.com/images/two.png');
       }
     },
     'in noembed file': {
@@ -674,8 +675,8 @@ exports.assetsHosts = vows.describe('assets hosts').addBatch({
         assert.include(data, 'two.png');
       },
       'should add assets hosts': function(error, data) {
-        assert.include(data, "url(//assets0.example.com/images/one.png");
-        assert.include(data, "url(//assets1.example.com/images/two.png");
+        assert.include(data, 'url(//assets0.example.com/images/one.png');
+        assert.include(data, 'url(//assets1.example.com/images/two.png');
       }
     },
     teardown: function() {

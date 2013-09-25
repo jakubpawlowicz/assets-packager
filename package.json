@@ -1,36 +1,79 @@
 {
   "name": "assets-packager",
-  "author": "Jakub Pawlowicz <jakub@goalsmashers.com> (http://twitter.com/GoalSmashers)",
-  "description": "Very fast assets packager - combines power of seq, uglify-js, gzip, assets-expander, clean-css and couple other tools to build assets insanely fast",
-  "keywords": ["assets", "packager", "css", "javascript", "less", "minifier"],
-  "homepage": "http://github.com/GoalSmashers/assets-packager",
-  "repository": {
-    "type" : "git",
-    "url" : "http://github.com/GoalSmashers/assets-packager.git"
-  },
   "version": "0.9.0",
+  "author": "Jakub Pawlowicz <jakub@goalsmashers.com> (https://twitter.com/GoalSmashers)",
+  "description": "Very fast assets packager - combines power of seq, uglify-js, gzip, assets-expander, clean-css and couple other tools to build assets insanely fast",
+  "license": "MIT",
+  "keywords": [
+    "assets",
+    "packager",
+    "css",
+    "javascript",
+    "less",
+    "minifier"
+  ],
+  "homepage": "https://github.com/GoalSmashers/assets-packager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GoalSmashers/assets-packager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GoalSmashers/assets-packager/issues"
+  },
   "bin": {
     "assetspkg": "./bin/assetspkg"
   },
+  "main": "index.js",
+  "files": [
+    "bin",
+    "lib",
+    "History.md",
+    "index.js",
+    "LICENSE"
+  ],
   "scripts": {
     "check": "jshint .",
     "prepublish": "jshint .",
     "test": "vows"
   },
   "dependencies": {
-    "optimist": "0.5.x",
-    "seq": "0.3.x",
-    "uglify-js": "1.2.x",
-    "less": "1.x",
+    "assets-expander": "0.5.x",
     "clean-css": "1.1.x",
     "enhance-css": "0.6.x",
-    "assets-expander": "0.5.x"
+    "less": "1.4.x",
+    "optimist": "0.6.x",
+    "seq": "0.3.x",
+    "uglify-js": "1.2.x"
   },
   "devDependencies": {
-    "vows": "0.7.x",
-    "jshint": "2.1.x"
+    "jshint": "2.1.11",
+    "vows": "0.7.x"
+  },
+  "jshintConfig": {
+    "browser": false,
+    "camelcase": true,
+    "curly": false,
+    "eqeqeq": false,
+    "eqnull": false,
+    "immed": true,
+    "latedef": true,
+    "maxerr": 100,
+    "multistr": true,
+    "noarg": true,
+    "node": true,
+    "plusplus": false,
+    "quotmark": "true",
+    "regexp": false,
+    "strict": false,
+    "trailing": true,
+    "undef": true,
+    "unused": true
   },
   "engines": {
     "node": ">=0.6.0"
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
   }
 }
