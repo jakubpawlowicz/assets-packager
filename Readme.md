@@ -2,7 +2,7 @@
 [![Build Status](https://secure.travis-ci.org/GoalSmashers/assets-packager.png)](https://travis-ci.org/GoalSmashers/assets-packager)
 [![Dependency Status](https://gemnasium.com/GoalSmashers/assets-packager.png)](https://gemnasium.com/GoalSmashers/assets-packager)
 
-## What is assets-packager? ##
+## What is assets-packager?
 
 Assets-packager is a node.js-based tool for compiling, minifying, and packaging
 CSS and JavaScript assets into production-ready packages.
@@ -22,22 +22,23 @@ And JavaScripts ones are
 * minified using the wonderful [UglifyJS](https://github.com/mishoo/UglifyJS)
 * packaged (and optionally precompressed)
 
-## Usage ##
 
-### What are the requirements? ###
+## Usage
+
+### What are the requirements?
 
 ```
-node 0.6.0+ on *nix (fully tested on OS X 10.6+ and CentOS)
-node 0.8.0+ on Windows
+node.js 0.6.0+ on *nix (fully tested on OS X 10.6+ and CentOS)
+node.js 0.8.0+ on Windows
 ```
 
-### How to install assets-packager? ###
+### How to install assets-packager?
 
 ```
 npm install -g assets-packager
 ```
 
-### Tl;dr. Give me a quick demo! ###
+### Tl;dr. Give me a quick demo!
 
 OK. Here are commands to run
 
@@ -50,7 +51,7 @@ assetspkg -c assets.yml -g
 Now check _examples/public/javascripts/bundled_ and _examples/public/stylesheets/bundled_ for bundled code.
 That's it!
 
-### Is it fast? ###
+### Is it fast?
 
 You should have just witnessed it by yourself. :-)
 
@@ -59,7 +60,7 @@ and it builds 20 CSS and 15 JavaScript bundles from hundreds of assets in around
 
 So yes, it is fast!
 
-### How to use assets-packager in my application? ###
+### How to use assets-packager in my application?
 
 First of all it assumes you have Rails-like directory structure for your assets, e.g:
 
@@ -69,7 +70,8 @@ First of all it assumes you have Rails-like directory structure for your assets,
     - stylesheets
         - _some stylesheets_
 
-Then it also needs a configuration file (here we name it assets.yml) with a definition of JS/CSS bundles, e.g:
+Then it also needs a configuration file (here we name it **assets.yml**)
+with a definition of JS/CSS bundles, e.g:
 
 ```
 # stylesheets
@@ -93,48 +95,50 @@ assetspkg -c assets.yml
 All the packages go into _public/javascripts/bundled_ and _public/stylesheets/bundled_.
 You'll probably want to put that command somewhere into your build/deploy script.
 
-### How to configure it? ###
+### How to use assets-packager CLI?
+
+Assets-packager accepts the following command line arguments:
 
 ```
-assetspkg -h
+assetspkg [options]
+
+-h, --help                  Output usage information
+-v, --version               Output the version number
+-a, --assethosts [list]     assets host to use in CSS bundles (defaults to none)
+-b, --cacheboosters         add MD5 hash to file names aka hard cache boosters (defaults to false)
+--bj, --js-bundled [path]   path to JavaScript root directory (relative to --root option)
+--bs, --styles-bundled [path]   path to stylesheets root directory (relative to --root option)
+-c, --config [path]         path to file with bundles definition (defaults to ./config/assets.yml)
+-g, --gzip                  gzip packaged files (defaults to false)
+-i, --indent [value]        indentation level in spaces when used with --nm switch
+-j, --concurrent [value]    number of concurrent tasks executed at once (defaults to number of logical CPUs)
+-l, --line-break-at [value] number of characters per line in optimized JavaScript (defaults to off which means no line splitting)
+-n, --noembedversion        create a version of packaged CSS without embedded images (defaults to false)
+--nm, --nominifyjs          combine JS files without minification (defaults to false)
+-o, --only [list]           package only given assets group (or groups if separated by comma)
+--pj, --js-path [path]      path to JavaScript root directory (relative to --root option)
+--ps, --styles-path [path]  path to stylesheets root directory (relative to --root option)
+-r, --root [path]           root directory with assets directories (defaults to ./public)
 ```
 
-Options include:
+### What are the assets-packager's dev commands?
 
-* -c - path to file with bundles definition (defaults to ./config/assets.yml)
-* -r - root directory with assets directories (defaults to ./public)
-* -g - create gzipped bundles (useful if your server supports serving precompressed files, like [nginx](http://wiki.nginx.org/NginxHttpGzipStaticModule))
-* --nm - do not minify JS, only combine (use the `beautify` option of UglifyJS)
-* -i - when using --nm, specify the indentation level in spaces
-* -j - number of concurrent tasks executed at once (defaults to number of logical CPUs)
-* -n - create alternate stylesheets bundles without inlined images (Explorer 6/7, I'm looking at you!)
-* -a - use asset hosts for image URLs, e.g _-a [assets0,assets1].yourdomain.com_
-* -b - add MD5 hash to bundled file names (aka hard cache boosters)
-* -o - narrow the set of bundles being build, e.g. _-o application.js_, _-o *.css_, or _-o public.css,application.css_
+First clone the source, then run:
 
-### The feature I want is not there! ###
+* `npm run check` to check JS sources with [JSHint](https://github.com/jshint/jshint/)
+* `npm test` for the test suite
+
+### The feature I want is not there!
 
 Open an issue. Or better: fork the project, add the feature
 (don't forget about tests!) and send a pull request.
 
-### How to test assets-packager? ###
 
-First, install dependencies
-
-```
-npm install
-```
-
-Then, run the specs:
-
-```
-npm test
-```
-
-## Contributors ##
+## Contributors
 
 * Jean-Denis Vauguet [@chikamichi](https://github.com/chikamichi) - `--nominifyjs` and `--indent` options allow for combination-only processing.
 
-## License ##
+
+## License
 
 Assets-packager is released under the [MIT License](https://github.com/GoalSmashers/assets-packager/blob/master/LICENSE).
