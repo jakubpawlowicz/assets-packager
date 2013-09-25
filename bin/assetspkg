@@ -23,9 +23,9 @@ commands
   .option('--bs, --styles-bundled [path]', 'path to stylesheets root directory (relative to --root option)')
   .option('-c, --config [path]', 'path to file with bundles definition (defaults to ./config/assets.yml)')
   .option('-g, --gzip', 'gzip packaged files (defaults to false)')
-  .option('-i, --indent [value]', 'indentation level in spaces when used with --nm switch.', parseInt)
+  .option('-i, --indent [value]', 'indentation level in spaces when used with --nm switch', parseInt)
   .option('-j, --concurrent [value]', 'number of concurrent tasks executed at once (defaults to number of logical CPUs)', parseInt)
-  .option('-l, --line-break-at [value]', 'number of characters per line in optimized JavaScript (defaults to off which means no line splitting).', parseInt)
+  .option('-l, --line-break-at [value]', 'number of characters per line in optimized JavaScript (defaults to off which means no line splitting)', parseInt)
   .option('-n, --noembedversion', 'create a version of packaged CSS without embedded images (defaults to false)')
   .option('--nm, --nominifyjs', 'combine JS files without minification (defaults to false)')
   .option('-o, --only [list]', 'package only given assets group (or groups if separated by comma)')
@@ -64,7 +64,8 @@ if (options.only) {
     }),
     has: function(name) {
       for (var i = 0, c = this.list.length; i < c; i++) {
-        if (this.list[i].test(name)) return true;
+        if (this.list[i].test(name))
+          return true;
       }
       return false;
     },
