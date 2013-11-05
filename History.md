@@ -2,7 +2,7 @@
 ==================
 
 * Adds customizable paths to bundled files.
-* Updates clean-css dependency to 1.1.x.
+* Updates clean-css dependency to 2.0.x.
 * Fixes [#14](https://github.com/GoalSmashers/assets-packager/issues/14) - replaces optimist with commander.
 
 0.9.0 / 2013-06-04

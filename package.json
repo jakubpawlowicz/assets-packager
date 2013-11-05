@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "assets-expander": "0.5.x",
-    "clean-css": "1.1.x",
+    "clean-css": "2.0.x",
     "commander": "2.0.x",
     "enhance-css": "0.6.x",
     "less": "1.4.x",
