@@ -32,8 +32,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "check": "jshint .",
-    "prepublish": "jshint .",
+    "check": "jshint ./bin/assetspkg .",
+    "prepublish": "npm run check",
     "test": "vows"
   },
   "dependencies": {
@@ -41,12 +41,12 @@
     "clean-css": "2.0.x",
     "commander": "2.0.x",
     "enhance-css": "0.6.x",
-    "less": "1.4.x",
+    "less": "1.5.x",
     "seq": "0.3.x",
     "uglify-js": "1.2.x"
   },
   "devDependencies": {
-    "jshint": "2.1.11",
+    "jshint": "2.3.x",
     "vows": "0.7.x"
   },
   "jshintConfig": {
@@ -57,13 +57,11 @@
     "eqnull": false,
     "immed": true,
     "latedef": true,
-    "maxerr": 100,
     "multistr": true,
     "noarg": true,
     "node": true,
     "plusplus": false,
     "quotmark": "true",
-    "regexp": false,
     "strict": false,
     "trailing": true,
     "undef": true,
