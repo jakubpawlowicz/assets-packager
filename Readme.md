@@ -1,7 +1,7 @@
 [![NPM version](https://badge.fury.io/js/assets-packager.png)](https://badge.fury.io/js/assets-packager)
 [![Build Status](https://secure.travis-ci.org/GoalSmashers/assets-packager.png)](https://travis-ci.org/GoalSmashers/assets-packager)
-[![Dependency Status](https://david-dm.org/GoalSmashers/assets-packager.png)](https://david-dm.org/GoalSmashers/assets-packager)
-[![devDependency Status](https://david-dm.org/GoalSmashers/assets-packager/dev-status.png)](https://david-dm.org/GoalSmashers/assets-packager#info=devDependencies)
+[![Dependency Status](https://david-dm.org/GoalSmashers/assets-packager.png?theme=shields.io)](https://david-dm.org/GoalSmashers/assets-packager)
+[![devDependency Status](https://david-dm.org/GoalSmashers/assets-packager/dev-status.png?theme=shields.io)](https://david-dm.org/GoalSmashers/assets-packager#info=devDependencies)
 
 ## What is assets-packager?
 
