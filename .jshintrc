@@ -1,12 +1,10 @@
 {
-  "browser": false,
   "camelcase": true,
   "curly": false,
   "eqeqeq": false,
   "eqnull": false,
   "immed": true,
   "latedef": true,
-  "multistr": true,
   "noarg": true,
   "node": true,
   "plusplus": false,
