@@ -10,7 +10,7 @@ CSS and JavaScript assets into production-ready packages.
 
 CSS bundles are created from assets which are
 
-* compiled from [LESS](https://github.com/cloudhead/less.js) templates (optional)
+* compiled from [LESS](https://github.com/less/less.js) templates (optional)
 * minified using [clean-css](https://github.com/GoalSmashers/clean-css)
 * bundled
 * preprocessed via [enhance-css](https://github.com/GoalSmashers/enhance-css)
@@ -74,7 +74,7 @@ First of all it assumes you have Rails-like directory structure for your assets,
 Then it also needs a configuration file (here we name it **assets.yml**)
 with a definition of JS/CSS bundles, e.g:
 
-```
+```yml
 # stylesheets
 stylesheets:
   application: 'reset,grid,base,application'
