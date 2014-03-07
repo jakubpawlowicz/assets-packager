@@ -29,8 +29,7 @@ And JavaScripts ones are
 ### What are the requirements?
 
 ```
-node.js 0.6.0+ on *nix (fully tested on OS X 10.6+ and CentOS)
-node.js 0.8.0+ on Windows
+node.js 0.8.0+ on *nix (fully tested on OS X 10.6+ and CentOS) and Windows
 ```
 
 ### How to install assets-packager?

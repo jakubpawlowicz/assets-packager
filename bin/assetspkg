@@ -2,7 +2,6 @@
 
 var fs = require('fs');
 var path = require('path');
-var existsSync = fs.existsSync || path.existsSync;
 var commands = require('commander');
 
 var packageConfig = fs.readFileSync(path.join(path.dirname(fs.realpathSync(process.argv[1])), '../package.json'));
@@ -73,12 +72,12 @@ if (options.only) {
   };
 }
 
-if (!existsSync(options.config)) {
+if (!fs.existsSync(options.config)) {
   process.stderr.write('Configuration file "' + options.config + '" is missing!\n');
   return 0;
 }
 
-if (!existsSync(options.root)) {
+if (!fs.existsSync(options.root)) {
   process.stderr.write('Root path "' + options.root + '" could not be found!\n');
   return 0;
 }

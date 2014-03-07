@@ -4,7 +4,6 @@ var fs = require('fs');
 var path = require('path');
 var zlib = require('zlib');
 var exec = require('child_process').exec;
-var existsSync = fs.existsSync || path.existsSync;
 
 var isWindows = process.platform == 'win32';
 var deleteDir = function(pathToDir) {
@@ -47,24 +46,24 @@ var cacheData = function(set) {
 };
 
 assert.hasFile = function(set, type, name) {
-  assert.isTrue(existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
+  assert.isTrue(fs.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
 };
 assert.notHasFile = function(set, type, name) {
-  assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
+  assert.isFalse(fs.existsSync(fullPath(path.join('test/data', set, 'public', type, name))));
 };
 assert.hasBundledFile = function(set, type, name) {
   var filePath = fullPath(path.join('test/data', set, 'public', type, 'bundled', name));
-  assert.isTrue(existsSync(filePath));
+  assert.isTrue(fs.existsSync(filePath));
 
   if (!isWindows)
     assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
 };
 assert.notHasBundledFile = function(set, type, name) {
-  assert.isFalse(existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
+  assert.isFalse(fs.existsSync(fullPath(path.join('test/data', set, 'public', type, 'bundled', name))));
 };
 assert.hasBundledFileIn = function(set, type, name, bundledPath) {
   var filePath = fullPath(path.join('test/data', set, 'public', bundledPath, name));
-  assert.isTrue(existsSync(filePath));
+  assert.isTrue(fs.existsSync(filePath));
 
   if (!isWindows)
     assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
@@ -227,7 +226,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
   'packaging with hard cache boosters enabled': {
     topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b'),
     'should create .assets.yml.json': function() {
-      assert.isTrue(existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
+      assert.isTrue(fs.existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
     },
     'should bundle css into packages': function() {
       var cacheInfo = cacheData('test1');
@@ -285,8 +284,8 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
   'should rename files when adding cache stamps': {
     topic: withOptions('-b -r data/test2/public -c data/test2/assets.yml'),
     'should create stamped files': function() {
-      assert.isTrue(existsSync(fullPath('test/data/test2/public/images/one-77f77b6eaf58028e095681c21bad95a8.png')));
-      assert.isTrue(existsSync(fullPath('test/data/test2/public/images/two-77f77b6eaf58028e095681c21bad95a8.png')));
+      assert.isTrue(fs.existsSync(fullPath('test/data/test2/public/images/one-77f77b6eaf58028e095681c21bad95a8.png')));
+      assert.isTrue(fs.existsSync(fullPath('test/data/test2/public/images/two-77f77b6eaf58028e095681c21bad95a8.png')));
     },
     'should put stamped files into CSS file': {
       topic: function() {

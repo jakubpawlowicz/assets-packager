@@ -50,7 +50,7 @@
     "vows": "0.7.x"
   },
   "engines": {
-    "node": ">=0.6.0"
+    "node": ">=0.8.0"
   },
   "directories": {
     "example": "examples",
