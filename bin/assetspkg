@@ -15,45 +15,45 @@ var escapeRegExp = function(s) {
 commands
   .version(buildVersion, '-v, --version')
   .usage('[options]')
-  .option('-a, --assethosts [list]', 'assets host to use in CSS bundles (defaults to none)')
-  .option('-b, --cacheboosters', 'add MD5 hash to file names aka hard cache boosters (defaults to false)')
-  .option('--bj, --js-bundled [path]', 'path to JavaScript root directory (relative to --root option)')
-  .option('--bs, --styles-bundled [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('-b, --cache-boosters', 'add MD5 hash to file names aka hard cache boosters')
   .option('-c, --config [path]', 'path to file with bundles definition (defaults to ./config/assets.yml)')
-  .option('-g, --gzip', 'gzip packaged files (defaults to false)')
-  .option('-i, --indent [value]', 'indentation level in spaces when used with --nm switch', parseInt)
+  .option('--css-asset-hosts [list]', 'assets host prefix URLs with in CSS bundles')
+  .option('--css-bundle-to [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('--css-safe-embed', 'create an additional version of packaged CSS without embedded images')
+  .option('--css-source [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('-g, --gzip', 'gzip packaged files')
   .option('-j, --concurrent [value]', 'number of concurrent tasks executed at once (defaults to number of logical CPUs)', parseInt)
-  .option('-l, --line-break-at [value]', 'number of characters per line in optimized JavaScript (defaults to off which means no line splitting)', parseInt)
-  .option('-n, --noembedversion', 'create a version of packaged CSS without embedded images (defaults to false)')
-  .option('--nm, --nominifyjs', 'combine JS files without minification (defaults to false)')
-  .option('-o, --only [list]', 'package only given assets group (or groups if separated by comma)')
-  .option('--pj, --js-path [path]', 'path to JavaScript root directory (relative to --root option)')
-  .option('--ps, --styles-path [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('--js-bundle-to [path]', 'path to JavaScript root directory (relative to --root option)')
+  .option('--js-indent [value]', 'indentation level in spaces when used with --js-no-minify switch', parseInt)
+  .option('--js-line-break-at [value]', 'number of characters per line in optimized JavaScript (defaults to no limit)', parseInt)
+  .option('--js-no-minify', 'turn off JS minification')
+  .option('--js-source [path]', 'path to JavaScript root directory (relative to --root option)')
+  .option('-o, --only [list]', 'package only given assets group or groups if separated by comma(s)')
   .option('-r, --root [path]', 'root directory with assets directories (defaults to ./public)')
   .parse(process.argv);
 
 var options = {
-  assetHosts: commands.assethosts,
-  cacheBoosters: commands.cacheboosters,
+  cacheBoosters: commands.cacheBoosters,
   concurrent: commands.concurrent || require('os').cpus().length,
-  config: path.join(process.cwd(), commands.config || 'config/assets.yml'),
-  gzip: commands.gzip,
-  indentLevel: commands.indent,
-  lineBreakAt: commands.lineBreakAt,
-  noEmbedVersion: commands.noembedversion,
-  noMinifyJS: commands.nominifyjs,
-  only: commands.only,
-  path: {
-    javascripts: commands.jsPath || './javascripts',
-    stylesheets: commands.stylesPath || './stylesheets'
+  config: path.join(process.cwd(), commands.config || './config/assets.yml'),
+  css: {
+    assetHosts: commands.cssAssetHosts,
+    safeEmbed: commands.cssSafeEmbed,
+    source: commands.cssSource || './stylesheets'
   },
+  gzip: commands.gzip,
+  js: {
+    indent: commands.jsIndent,
+    lineBreakAt: commands.jsLineBreakAt,
+    minify: commands.jsMinify,
+    source: commands.jsSource || './javascripts'
+  },
+  only: commands.only,
   root: path.join(process.cwd(), commands.root || 'public')
 };
 
-options.bundledPath = {
-  javascripts: commands.jsBundled || path.join(options.path.javascripts, '/bundled'),
-  stylesheets: commands.stylesBundled || path.join(options.path.stylesheets, '/bundled')
-};
+options.js.bundleTo = commands.jsBundleTo || path.join(options.js.source, '/bundled');
+options.css.bundleTo = commands.cssBundleTo || path.join(options.css.source, '/bundled');
 
 if (options.only) {
   options.only = {

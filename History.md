@@ -2,6 +2,7 @@
 ==================
 
 * Adds customizable paths to bundled files.
+* Renames CLI options for future extensibility (breaks compatibility with 0.9).
 * Replaces 'seq' with 'async' to make the more easily express the flow.
 * Updates assets-expander dependency to 1.0.x.
 * Updates clean-css dependency to 2.1.x.

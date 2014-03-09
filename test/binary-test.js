@@ -202,7 +202,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
   }
 }).addBatch({
   'packaging with gzipped and "no embed" versions': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed'),
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -233,7 +233,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
   }
 }).addBatch({
   'packaging with hard cache boosters enabled': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -b'),
     'should create .assets.yml.json': function() {
       assert.isTrue(fs.existsSync(fullPath(path.join('test/data/test1/.assets.yml.json'))));
     },
@@ -272,7 +272,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       fs.writeFile(fullPath('/test/data/test1/.assets.yml.json'), '{"test":123}', 'utf8', this.callback);
     },
     'process with fake cache stamps file': {
-      topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b -o all.css'),
+      topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -b -o all.css'),
       'should add single file entry': function() {
         var cacheInfo = cacheData('test1');
         assert.notEqual(undefined, cacheInfo['stylesheets/all']);
@@ -323,7 +323,7 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 
 exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   'packaging only one selected package': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -o all.css'),
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -354,7 +354,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'packaging only two selected packages': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -o all.css,subset.css'),
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -385,7 +385,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'packaging only three selected packages': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css,subset.css,all.js'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -o all.css,subset.css,all.js'),
     'should compile css to less': function() {
       assert.hasFile('test1', 'stylesheets', 'one.css');
       assert.hasFile('test1', 'stylesheets', 'two.css');
@@ -416,7 +416,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'not compiling less when packaging js packages only': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.js'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -o all.js'),
     'should not compile css to less': function() {
       assert.notHasFile('test1', 'stylesheets', 'one.css');
       assert.notHasFile('test1', 'stylesheets', 'two.css');
@@ -465,7 +465,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'not showing processing JS when packaging CSS only': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.css'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -o all.css'),
     'should not output processing JS': function(error, stdout) {
       assert.equal(-1, stdout.indexOf('Processing type "javascripts"'));
     },
@@ -475,7 +475,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
   }
 }).addBatch({
   'not showing processing CSS when packaging JS only': {
-    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -o all.js'),
+    topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g --css-safe-embed -o all.js'),
     'should not output processing CSS': function(error, stdout) {
       assert.equal(-1, stdout.indexOf('Processing type "stylesheets"'));
     },
@@ -487,7 +487,7 @@ exports.subsetSuite = vows.describe('packaging selected packages').addBatch({
 
 exports.customPaths = vows.describe('custom paths').addBatch({
   'one simple path': {
-    topic: withOptions('-r data/test-paths1/public -c data/test-paths1/assets.yml --ps ./css'),
+    topic: withOptions('-r data/test-paths1/public -c data/test-paths1/assets.yml --css-source ./css'),
     'should bundle css': function() {
       assert.hasBundledFile('test-paths1', 'css', 'all.css');
     },
@@ -509,7 +509,7 @@ exports.customPaths = vows.describe('custom paths').addBatch({
     }
   },
   'complex paths': {
-    topic: withOptions('-r data/test-paths2/public -c data/test-paths2/assets.yml --styles-path ./assets/css --js-path ./js -g'),
+    topic: withOptions('-r data/test-paths2/public -c data/test-paths2/assets.yml --css-source ./assets/css --js-source ./js -g'),
     'should bundle css': function() {
       assert.hasBundledFile('test-paths2', 'assets/css', 'mobile/all.css');
       assert.hasBundledFile('test-paths2', 'assets/css', 'mobile/all.css.gz');
@@ -592,7 +592,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
   }
 }).addBatch({
   'correct line breaking': {
-    topic: withOptions('-r data/test-js/public -c data/test-js/assets.yml -l 10'),
+    topic: withOptions('-r data/test-js/public -c data/test-js/assets.yml --js-line-break-at 10'),
     'should break file at': {
       topic: function() {
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
@@ -608,7 +608,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
   }
 }).addBatch({
   'no JS minification': {
-    topic: withOptions('-r data/test3/public --nm -i 2 -c data/test3/assets.yml'),
+    topic: withOptions('-r data/test3/public --js-no-minify --js-indent 2 -c data/test3/assets.yml'),
     'for optimizations.js': {
       topic: function() {
         fs.readFile(fullPath('test/data/test3/public/javascripts/bundled/optimizations.js'), 'utf-8', this.callback);
@@ -651,7 +651,7 @@ exports.assetsHosts = vows.describe('assets hosts').addBatch({
   }
 }).addBatch({
   'asset hosts': {
-    topic: withOptions('-r data/test2/public -c data/test2/assets.yml -n -a assets[0,1].example.com'),
+    topic: withOptions('-r data/test2/public -c data/test2/assets.yml --css-safe-embed --css-asset-hosts assets[0,1].example.com'),
     'in plain file': {
       topic: function() {
         fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all.css'), 'utf-8', this.callback);
@@ -690,7 +690,7 @@ exports.assetsHosts = vows.describe('assets hosts').addBatch({
 
 exports.bundledPaths = vows.describe('bundled paths').addBatch({
   'simple packaging': {
-    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed'),
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --css-source ./css --js-bundle-to ./compressed --css-bundle-to ./compressed'),
     'should bundle css': function() {
       assert.hasBundledFileIn('test-paths3', 'css', 'all.css', 'compressed');
     },
@@ -703,7 +703,7 @@ exports.bundledPaths = vows.describe('bundled paths').addBatch({
     }
   },
   'packaging with compression enabled': {
-    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed -g'),
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --css-source ./css --js-bundle-to ./compressed --css-bundle-to ./compressed -g'),
     'should bundle css': function() {
       assert.hasBundledFileIn('test-paths3', 'css', 'all.css', 'compressed');
       assert.hasBundledFileIn('test-paths3', 'css', 'all.css.gz', 'compressed');
@@ -718,7 +718,7 @@ exports.bundledPaths = vows.describe('bundled paths').addBatch({
     }
   },
   'packaging with hard cache boosters enabled': {
-    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed -b'),
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --css-source ./css --js-bundle-to ./compressed --css-bundle-to ./compressed -b'),
     'should bundle css': function() {
       var cacheInfo = cacheData('test-paths3');
       assert.hasBundledFileIn('test-paths3', 'stylesheets', 'all-' + cacheInfo['stylesheets/all'] + '.css', 'compressed');
@@ -733,7 +733,7 @@ exports.bundledPaths = vows.describe('bundled paths').addBatch({
     }
   },
   'packaging with hard cache boosters and compression enabled': {
-    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --ps ./css --js-bundled ./compressed --styles-bundled ./compressed -g -b'),
+    topic: withOptions('-r data/test-paths3/public -c data/test-paths3/assets.yml --css-source ./css --js-bundle-to ./compressed --css-bundle-to ./compressed -g -b'),
     'should bundle css': function() {
       var cacheInfo = cacheData('test-paths3');
       assert.hasBundledFileIn('test-paths3', 'stylesheets', 'all-' + cacheInfo['stylesheets/all'] + '.css.gz', 'compressed');

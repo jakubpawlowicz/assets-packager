@@ -102,22 +102,22 @@ Assets-packager accepts the following command line arguments:
 ```
 assetspkg [options]
 
--h, --help                  Output usage information
--v, --version               Output the version number
--a, --assethosts [list]     assets host to use in CSS bundles (defaults to none)
--b, --cacheboosters         add MD5 hash to file names aka hard cache boosters (defaults to false)
---bj, --js-bundled [path]   path to JavaScript root directory (relative to --root option)
---bs, --styles-bundled [path]   path to stylesheets root directory (relative to --root option)
+-h, --help                  output usage information
+-v, --version               output the version number
+-b, --cache-boosters        add MD5 hash to file names aka hard cache boosters
 -c, --config [path]         path to file with bundles definition (defaults to ./config/assets.yml)
--g, --gzip                  gzip packaged files (defaults to false)
--i, --indent [value]        indentation level in spaces when used with --nm switch
+--css-asset-hosts [list]    assets host prefix URLs with in CSS bundles
+--css-bundle-to [path]      path to stylesheets root directory (relative to --root option)
+--css-safe-embed            create an additional version of packaged CSS without embedded images
+--css-source [path]         path to stylesheets root directory (relative to --root option)
+-g, --gzip                  gzip packaged files
 -j, --concurrent [value]    number of concurrent tasks executed at once (defaults to number of logical CPUs)
--l, --line-break-at [value] number of characters per line in optimized JavaScript (defaults to off which means no line splitting)
--n, --noembedversion        create a version of packaged CSS without embedded images (defaults to false)
---nm, --nominifyjs          combine JS files without minification (defaults to false)
--o, --only [list]           package only given assets group (or groups if separated by comma)
---pj, --js-path [path]      path to JavaScript root directory (relative to --root option)
---ps, --styles-path [path]  path to stylesheets root directory (relative to --root option)
+--js-bundle-to [path]       path to JavaScript root directory (relative to --root option)
+--js-indent [value]         indentation level in spaces when used with --js-no-minify switch
+--js-line-break-at [value]  number of characters per line in optimized JavaScript (defaults to no limit)
+--js-no-minify              turn off JS minification
+--js-source [path]          path to JavaScript root directory (relative to --root option)
+-o, --only [list]           package only given assets group or groups if separated by comma(s)
 -r, --root [path]           root directory with assets directories (defaults to ./public)
 ```
 
