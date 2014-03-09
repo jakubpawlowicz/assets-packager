@@ -55,7 +55,7 @@ assert.hasBundledFile = function(set, type, name) {
   var filePath = fullPath(path.join('test/data', set, 'public', type, 'bundled', name));
   assert.isTrue(fs.existsSync(filePath));
 
-  if (!isWindows)
+  if (!isWindows && !process.env.TRAVIS)
     assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
 };
 assert.notHasBundledFile = function(set, type, name) {
@@ -65,7 +65,7 @@ assert.hasBundledFileIn = function(set, type, name, bundledPath) {
   var filePath = fullPath(path.join('test/data', set, 'public', bundledPath, name));
   assert.isTrue(fs.existsSync(filePath));
 
-  if (!isWindows)
+  if (!isWindows && !process.env.TRAVIS)
     assert.equal(16877, fs.statSync(path.dirname(filePath)).mode);
 };
 
