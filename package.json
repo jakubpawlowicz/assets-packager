@@ -43,7 +43,7 @@
     "commander": "2.1.x",
     "enhance-css": "1.0.x",
     "less": "1.7.x",
-    "uglify-js": "1.2.x"
+    "uglify-js": "2.4.x"
   },
   "devDependencies": {
     "jshint": "2.4.x",

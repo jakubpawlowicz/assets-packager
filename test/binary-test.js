@@ -181,11 +181,14 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       assert.hasBundledFile('test1', 'javascripts', 'subset.js.gz');
       assert.hasBundledFile('test1', 'javascripts', 'all.js.gz');
     },
-    'should correctly compress js content': function() {
-      var compressedBuffer = fs.readFileSync(fullPath(path.join('test', 'data', 'test1', 'public', 'javascripts', 'bundled', 'all.js.gz')));
-      zlib.gunzip(compressedBuffer, function(error, data) {
-        assert.equal(data.toString('utf8'), 'var x=0,y=0');
-      });
+    'should correctly compress js content': {
+      topic: function() {
+        var compressedBuffer = fs.readFileSync(fullPath(path.join('test', 'data', 'test1', 'public', 'javascripts', 'bundled', 'all.js.gz')));
+        zlib.gunzip(compressedBuffer, this.callback);
+      },
+      'after deflation': function(error, data) {
+        assert.equal(data.toString('utf8'), 'var x=0,y=0;');
+      }
     },
     teardown: function() {
       cleanBundles('test1');
@@ -529,7 +532,7 @@ exports.customPaths = vows.describe('custom paths').addBatch({
         fs.readFile(fullPath('test/data/test-paths2/public/js/bundled/mobile/all.js'), 'utf-8', this.callback);
       },
       'properly': function(error, data) {
-        assert.equal('var x=0', data);
+        assert.equal('var x=0;', data);
       }
     },
     teardown: function() {
@@ -551,7 +554,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         if (error)
           throw error;
 
-        assert.equal('function factorial(a){return a==0?1:a*factorial(a-1)}for(var i=0,j=factorial(10).toString(),k=j.length;i<k;i++)console.log(j[i])',
+        assert.equal('function factorial(i){return 0==i?1:i*factorial(i-1)}for(var i=0,j=factorial(10).toString(),k=j.length;k>i;i++)console.log(j[i]);',
           data);
       }
     },
@@ -564,7 +567,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
           throw error;
 
         assert.equal(
-          'Cufon.registerFont(function(f) {\nvar b = _cufon_bridge_ = {\np: [ {\nd: "88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77"\n} ]\n};\n});',
+          'Cufon.registerFont((function(f){var b=_cufon_bridge_={p:[{"d":"88,-231v18,-2,31,19,8,26v-86,25,-72,188,-18,233v7,4,17,4,17,13v-1,14,-12,18,-26,10v-19,-10,-48,-49,-56,-77"}]};}));',
           data
         );
       }
@@ -581,7 +584,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
       },
       'any character': function(error, data) {
-        assert.equal('var a=0,b=0,c=0,d=0,e=0,f=0,g=0,h=0,i=0,j=0', data);
+        assert.equal('function test(){var c={b:0,c:function(){}};c.b++,c.c(),c.c()}', data);
       }
     },
     teardown: function() {
@@ -595,8 +598,8 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
       topic: function() {
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
       },
-      '10 characters': function(error, data) {
-        assert.equal('var a=0,b=0\n,c=0,d=0,e=0\n,f=0,g=0,h=0\n,i=0,j=0', data);
+      '10 characters if possible': function(error, data) {
+        assert.equal('function test(){var c={b:0,c:function(){}};\nc.b++,c.c(),c.c()\n}', data);
       }
     },
     teardown: function() {
@@ -614,7 +617,7 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         if (error)
           throw error;
 
-        assert.equal(data, 'function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n}\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}');
+        assert.equal(data, 'function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n};\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}');
       }
     },
     teardown: function() {
