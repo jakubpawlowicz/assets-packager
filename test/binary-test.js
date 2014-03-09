@@ -6,6 +6,12 @@ var zlib = require('zlib');
 var exec = require('child_process').exec;
 
 var isWindows = process.platform == 'win32';
+var lineBreak = isWindows ? '\r\n' : '\n';
+
+var unixContext = function(context) {
+  return isWindows ? {} : context;
+};
+
 var deleteDir = function(pathToDir) {
   if (isWindows)
     exec('rd /s /q ' + pathToDir);
@@ -70,7 +76,7 @@ assert.hasBundledFileIn = function(set, type, name, bundledPath) {
 };
 
 exports.commandsSuite = vows.describe('binary commands').addBatch({
-  'no options': {
+  'no options': unixContext({
     topic: withOptions(),
     'should not produce output': function(error, stdout) {
       assert.isEmpty(stdout);
@@ -81,22 +87,22 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
     'should give meaningful error': function(error, stdout, stderr) {
       assert.include(stderr, 'is missing');
     }
-  },
-  'help option': {
+  }),
+  'help option': unixContext({
     topic: withOptions('-h'),
     'should give help': function(error, stdout) {
       assert.include(stdout, 'Usage:');
       assert.include(stdout, 'Options:');
     }
-  },
-  'help option via --help': {
+  }),
+  'help option via --help': unixContext({
     topic: withOptions('--help'),
     'should give help': function(error, stdout) {
       assert.include(stdout, 'Usage:');
       assert.include(stdout, 'Options:');
     }
-  },
-  'non existing root path': {
+  }),
+  'non existing root path': unixContext({
     topic: withOptions('-r test/fake -c data/empty.yml'),
     'should not give output': function(error, stdout) {
       assert.isEmpty(stdout);
@@ -104,8 +110,8 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
     'should print not found error': function(error, stdout, stderr) {
       assert.include(stderr, path.join('test', 'fake') + '" could not be found');
     }
-  },
-  'non existing config file': {
+  }),
+  'non existing config file': unixContext({
     topic: withOptions('-r test/fake -c data/fake.yml'),
     'should not give output': function(error, stdout) {
       assert.isEmpty(stdout);
@@ -113,14 +119,14 @@ exports.commandsSuite = vows.describe('binary commands').addBatch({
     'should print not found error': function(error, stdout, stderr) {
       assert.include(stderr, path.join('data', 'fake.yml') + '" is missing');
     }
-  },
-  'version': {
+  }),
+  'version': unixContext({
     topic: withOptions('-v'),
     'should give proper version': function(error, stdout) {
       var version = JSON.parse(fs.readFileSync('./package.json')).version;
       assert.include(stdout, version);
     }
-  }
+  })
 });
 
 exports.packagingSuite = vows.describe('packaging all').addBatch({
@@ -592,7 +598,8 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         fs.readFile(fullPath('test/data/test-js/public/javascripts/bundled/all.js'), 'utf-8', this.callback);
       },
       '10 characters if possible': function(error, data) {
-        assert.equal('function test(){var c={b:0,c:function(){}};\nc.b++,c.c(),c.c()\n}', data);
+        var expected = 'function test(){var c={b:0,c:function(){}};\nc.b++,c.c(),c.c()\n}';
+        assert.equal(expected, data.replace(/\r\n/g, '\n'));
       }
     },
     teardown: function() {
@@ -610,7 +617,8 @@ exports.javascriptOptimizing = vows.describe('javascript optimizing').addBatch({
         if (error)
           throw error;
 
-        assert.equal(data, 'function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n};\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}');
+        var expected = 'function factorial(n) {\n  if (n == 0) {\n    return 1;\n  }\n  return n * factorial(n - 1);\n};\n\nfor (var i = 0, j = factorial(10).toString(), k = j.length; i < k; i++) {\n  console.log(j[i]);\n}';
+        assert.equal(expected.replace(/\n/g, lineBreak), data);
       }
     },
     teardown: function() {

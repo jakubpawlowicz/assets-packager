@@ -7,6 +7,7 @@
 * Fixes [#14](https://github.com/GoalSmashers/assets-packager/issues/14) - replaces optimist with commander.
 * Fixes [#15](https://github.com/GoalSmashers/assets-packager/issues/15) - upgrades uglify-js to 2.4.x.
 * Fixes [#17](https://github.com/GoalSmashers/assets-packager/issues/17) - drops support for node.js 0.6.
+* Fixes [#19](https://github.com/GoalSmashers/assets-packager/issues/19) - fixes Windows support.
 
 0.9.0 / 2013-06-04
 ==================
