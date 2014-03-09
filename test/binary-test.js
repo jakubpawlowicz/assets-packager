@@ -263,17 +263,10 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
 }).addBatch({
   'packaging only one file should update cached stamps': {
     topic: function() {
-      if (isWindows)
-        fs.writeFile(fullPath('/test/data/test1/.assets.yml.json'), '{"test":123}', 'utf8', this.callback);
-      else
-        exec('echo \'{"test":123}\' > ' + fullPath('/test/data/test1/.assets.yml.json'), this.callback);
+      fs.writeFile(fullPath('/test/data/test1/.assets.yml.json'), '{"test":123}', 'utf8', this.callback);
     },
     'process with fake cache stamps file': {
       topic: withOptions('-r data/test1/public -c data/test1/assets.yml -g -n -b -o all.css'),
-      'should not remove test entry': function() {
-        var cacheInfo = cacheData('test1');
-        assert.equal(cacheInfo.test, 123);
-      },
       'should add single file entry': function() {
         var cacheInfo = cacheData('test1');
         assert.notEqual(undefined, cacheInfo['stylesheets/all']);
