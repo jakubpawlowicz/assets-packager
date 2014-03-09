@@ -5,23 +5,22 @@
 
 ## What is assets-packager?
 
-Assets-packager is a node.js-based tool for compiling, minifying, and packaging
-CSS and JavaScript assets into production-ready packages.
+Assets-packager is a tool for compiling, minifying, and packaging CSS and JavaScript assets into production-ready packages.
 
-CSS bundles are created from assets which are
+CSS bundles are created from assets which are:
 
-* compiled from [LESS](https://github.com/less/less.js) templates (optional)
-* minified using [clean-css](https://github.com/GoalSmashers/clean-css)
-* bundled
+* compiled from [LESS](https://github.com/less/less.js) templates (optional),
+* minified using [clean-css](https://github.com/GoalSmashers/clean-css),
+* bundled,
 * preprocessed via [enhance-css](https://github.com/GoalSmashers/enhance-css)
-  (inline images, asset hosts, etc)
-* packaged (and optionally precompressed)
+  (inline images, asset hosts, etc),
+* and packaged (and optionally precompressed).
 
-And JavaScripts ones are
+Similarly JavaScript files are:
 
-* bundled
-* minified using the wonderful [UglifyJS](https://github.com/mishoo/UglifyJS)
-* packaged (and optionally precompressed)
+* bundled,
+* minified using [UglifyJS](https://github.com/mishoo/UglifyJS),
+* and packaged (and optionally precompressed)
 
 
 ## Usage
@@ -55,36 +54,34 @@ That's it!
 
 You should have just witnessed it by yourself. :-)
 
-We use it on our production servers at [GoalSmashers.com](http://goalsmashers.com)
-and it builds 20 CSS and 15 JavaScript bundles from hundreds of assets in around 15 seconds.
+We use it as a part of build process for [GoalSmashers.com](http://goalsmashers.com)
+and it takes around 10 seconds to buld 40 CSS and 20 JavaScript bundles from hundreds of assets.
 
 So yes, it is fast!
 
 ### How to use assets-packager in my application?
 
-First of all it assumes you have Rails-like directory structure for your assets, e.g:
+First of all it assumes Rails-like directory structure for your assets, e.g:
 
 - public
     - javascripts
-        - _some javascripts_
+        - _some scripts_
     - stylesheets
-        - _some stylesheets_
+        - _some styles_
 
-Then it also needs a configuration file (here we name it **assets.yml**)
+Then it needs a configuration file (here we name it **assets.yml**)
 with a definition of JS/CSS bundles, e.g:
 
 ```yml
-# stylesheets
 stylesheets:
   application: 'reset,grid,base,application'
-# javascripts
 javascripts:
   application:
     - 'vendor/jquery'
     - 'application,helpers'
 ```
 
-We recommend placing it somewhere else than in your _public_ folder (could be _config_ in case of Rails).
+We recommend placing it somewhere else than in your _public_ folder.
 
 Now you can bundle all these packages with a single command:
 
@@ -93,7 +90,6 @@ assetspkg -c assets.yml
 ```
 
 All the packages go into _public/javascripts/bundled_ and _public/stylesheets/bundled_.
-You'll probably want to put that command somewhere into your build/deploy script.
 
 ### How to use assets-packager CLI?
 

@@ -2,11 +2,12 @@
   "name": "assets-packager",
   "version": "0.9.0",
   "author": "Jakub Pawlowicz <jakub@goalsmashers.com> (https://twitter.com/GoalSmashers)",
-  "description": "Very fast assets packager - combines power of seq, uglify-js, gzip, assets-expander, clean-css and couple other tools to build assets insanely fast",
+  "description": "Very fast assets pipeline - combines power of async, uglify-js, clean-css, enhance-css and couple other tools to make your assets production-ready",
   "license": "MIT",
   "keywords": [
     "assets",
     "packager",
+    "pipeline",
     "css",
     "javascript",
     "less",
