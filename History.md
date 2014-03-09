@@ -1,9 +1,9 @@
-[1.0.0 / 2014-xx-xx (UNRELEASED)](https://github.com/GoalSmashers/assets-packager/compare/v0.9.0...HEAD)
+[1.0.0 / 2014-03-10](https://github.com/GoalSmashers/assets-packager/compare/v0.9.0...v1.0.0)
 ==================
 
 * Adds customizable paths to bundled files.
 * Renames CLI options for future extensibility (breaks compatibility with 0.9).
-* Replaces 'seq' with 'async' to make the more easily express the flow.
+* Replaces 'seq' with 'async' to more easily express the flow.
 * Updates assets-expander dependency to 1.0.x.
 * Updates clean-css dependency to 2.1.x.
 * Updates enhance-css dependency to 1.0.x.

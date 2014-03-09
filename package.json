@@ -1,6 +1,6 @@
 {
   "name": "assets-packager",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "author": "Jakub Pawlowicz <jakub@goalsmashers.com> (https://twitter.com/GoalSmashers)",
   "description": "Very fast assets pipeline - combines power of async, uglify-js, clean-css, enhance-css and couple other tools to make your assets production-ready",
   "license": "MIT",
