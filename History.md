@@ -1,9 +1,11 @@
-0.10.0 / 2013-xx-xx (UNRELEASED)
+[1.0.0 / 2014-xx-xx (UNRELEASED)](https://github.com/GoalSmashers/assets-packager/compare/v0.9.0...HEAD)
 ==================
 
 * Adds customizable paths to bundled files.
 * Replaces 'seq' with 'async' to make the more easily express the flow.
-* Updates clean-css dependency to 2.0.x.
+* Updates assets-expander dependency to 1.0.x.
+* Updates clean-css dependency to 2.1.x.
+* Updates enhance-css dependency to 1.0.x.
 * Fixes [#14](https://github.com/GoalSmashers/assets-packager/issues/14) - replaces optimist with commander.
 * Fixes [#15](https://github.com/GoalSmashers/assets-packager/issues/15) - upgrades uglify-js to 2.4.x.
 * Fixes [#17](https://github.com/GoalSmashers/assets-packager/issues/17) - drops support for node.js 0.6.
