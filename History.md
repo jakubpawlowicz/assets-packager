@@ -1,4 +1,4 @@
-[1.1.0 / 2014-xx-xx (UNRELEASED)](https://github.com/GoalSmashers/assets-packager/compare/v1.0.0...v1.1.0)
+[1.1.0 / 2014-03-16](https://github.com/GoalSmashers/assets-packager/compare/v1.0.0...v1.1.0)
 ==================
 
 * Adds `--css-embed-all` switch to trigger embedding of all resources by enhance-css.
