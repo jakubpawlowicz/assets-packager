@@ -1,3 +1,8 @@
+[1.1.0 / 2014-xx-xx (UNRELEASED)](https://github.com/GoalSmashers/assets-packager/compare/v1.0.0...v1.1.0)
+==================
+
+* Updates enhance-css dependency to 1.1.x.
+
 [1.0.0 / 2014-03-10](https://github.com/GoalSmashers/assets-packager/compare/v0.9.0...v1.0.0)
 ==================
 
