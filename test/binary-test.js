@@ -319,6 +319,24 @@ exports.packagingSuite = vows.describe('packaging all').addBatch({
       deleteFiles(fullPath('test/data/test4/public/stylesheets/desktop/*.css'));
     }
   }
+}).addBatch({
+  'embeds all assets': {
+    topic: withOptions('-r data/test2/public -c data/test2/assets.yml --css-embed-all'),
+    'in all.css': {
+      topic: function() {
+        fs.readFile(fullPath('test/data/test2/public/stylesheets/bundled/all.css'), 'utf-8', this.callback);
+      },
+      'check for one.png': function(error, data) {
+        assert.include(data, 'a{background-image:url(data:image/png');
+      },
+      'check for two.png': function(error, data) {
+        assert.include(data, 'p{background-image:url(data:image/png');
+      }
+    },
+    teardown: function() {
+      cleanBundles('test2');
+    }
+  }
 });
 
 exports.subsetSuite = vows.describe('packaging selected packages').addBatch({

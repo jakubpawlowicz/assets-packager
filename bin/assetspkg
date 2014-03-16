@@ -19,6 +19,7 @@ commands
   .option('-c, --config [path]', 'path to file with bundles definition (defaults to ./config/assets.yml)')
   .option('--css-asset-hosts [list]', 'assets host prefix URLs with in CSS bundles')
   .option('--css-bundle-to [path]', 'path to stylesheets root directory (relative to --root option)')
+  .option('--css-embed-all', 'forces embedding of all resources by enhance-css')
   .option('--css-safe-embed', 'create an additional version of packaged CSS without embedded images')
   .option('--css-source [path]', 'path to stylesheets root directory (relative to --root option)')
   .option('-g, --gzip', 'gzip packaged files')
@@ -38,6 +39,7 @@ var options = {
   config: path.join(process.cwd(), commands.config || './config/assets.yml'),
   css: {
     assetHosts: commands.cssAssetHosts,
+    embedAll: commands.cssEmbedAll,
     safeEmbed: commands.cssSafeEmbed,
     source: commands.cssSource || './stylesheets'
   },

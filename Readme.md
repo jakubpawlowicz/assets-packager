@@ -104,6 +104,7 @@ assetspkg [options]
 -c, --config [path]         path to file with bundles definition (defaults to ./config/assets.yml)
 --css-asset-hosts [list]    assets host prefix URLs with in CSS bundles
 --css-bundle-to [path]      path to stylesheets root directory (relative to --root option)
+--css-embed-all             forces embedding of all resources by enhance-css
 --css-safe-embed            create an additional version of packaged CSS without embedded images
 --css-source [path]         path to stylesheets root directory (relative to --root option)
 -g, --gzip                  gzip packaged files
