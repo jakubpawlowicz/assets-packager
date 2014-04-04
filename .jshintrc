@@ -10,7 +10,6 @@
   "plusplus": false,
   "quotmark": "true",
   "strict": false,
-  "trailing": true,
   "undef": true,
   "unused": true
 }

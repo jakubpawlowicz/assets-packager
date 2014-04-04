@@ -47,7 +47,7 @@
     "uglify-js": "2.4.x"
   },
   "devDependencies": {
-    "jshint": "2.4.x",
+    "jshint": "2.5.x",
     "vows": "0.7.x"
   },
   "engines": {
