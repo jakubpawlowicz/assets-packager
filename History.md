@@ -1,4 +1,4 @@
-[1.2.0 / 2014-xx-xx](https://github.com/jakubpawlowicz/assets-packager/compare/v1.1.0...v1.2.0)
+[1.2.0 / 2014-08-24](https://github.com/jakubpawlowicz/assets-packager/compare/v1.1.0...v1.2.0)
 ==================
 
 * Bumps async dependency to 0.9.x.
