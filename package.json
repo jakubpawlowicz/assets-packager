@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "assets-expander": "1.0.x",
-    "async": "0.4.x",
+    "async": "0.9.x",
     "clean-css": "2.1.x",
     "commander": "2.2.x",
     "enhance-css": "1.1.x",
