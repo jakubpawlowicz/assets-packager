@@ -1,7 +1,7 @@
 {
   "name": "assets-packager",
   "version": "1.1.0",
-  "author": "Jakub Pawlowicz <jakub@goalsmashers.com> (https://twitter.com/GoalSmashers)",
+  "author": "Jakub Pawlowicz <contact@jakubpawlowicz.com> (http://twitter.com/jakubpawlowicz)",
   "description": "Very fast assets pipeline - combines power of async, uglify-js, clean-css, enhance-css and couple other tools to make your assets production-ready",
   "license": "MIT",
   "keywords": [
@@ -13,13 +13,13 @@
     "less",
     "minifier"
   ],
-  "homepage": "https://github.com/GoalSmashers/assets-packager",
+  "homepage": "https://github.com/jakubpawlowicz/assets-packager",
   "repository": {
     "type": "git",
-    "url": "https://github.com/GoalSmashers/assets-packager.git"
+    "url": "https://github.com/jakubpawlowicz/assets-packager.git"
   },
   "bugs": {
-    "url": "https://github.com/GoalSmashers/assets-packager/issues"
+    "url": "https://github.com/jakubpawlowicz/assets-packager/issues"
   },
   "bin": {
     "assetspkg": "./bin/assetspkg"

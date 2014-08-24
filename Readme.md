@@ -1,7 +1,7 @@
 [![NPM version](https://badge.fury.io/js/assets-packager.png)](https://badge.fury.io/js/assets-packager)
-[![Build Status](https://secure.travis-ci.org/GoalSmashers/assets-packager.png)](https://travis-ci.org/GoalSmashers/assets-packager)
-[![Dependency Status](https://david-dm.org/GoalSmashers/assets-packager.png?theme=shields.io)](https://david-dm.org/GoalSmashers/assets-packager)
-[![devDependency Status](https://david-dm.org/GoalSmashers/assets-packager/dev-status.png?theme=shields.io)](https://david-dm.org/GoalSmashers/assets-packager#info=devDependencies)
+[![Build Status](https://secure.travis-ci.org/jakubpawlowicz/assets-packager.png)](https://travis-ci.org/jakubpawlowicz/assets-packager)
+[![Dependency Status](https://david-dm.org/jakubpawlowicz/assets-packager.png?theme=shields.io)](https://david-dm.org/jakubpawlowicz/assets-packager)
+[![devDependency Status](https://david-dm.org/jakubpawlowicz/assets-packager/dev-status.png?theme=shields.io)](https://david-dm.org/jakubpawlowicz/assets-packager#info=devDependencies)
 
 ## What is assets-packager?
 
@@ -10,9 +10,9 @@ Assets-packager is a tool for compiling, minifying, and packaging CSS and JavaSc
 CSS bundles are created from assets which are:
 
 * compiled from [LESS](https://github.com/less/less.js) templates (optional),
-* minified using [clean-css](https://github.com/GoalSmashers/clean-css),
+* minified using [clean-css](https://github.com/jakubpawlowicz/clean-css),
 * bundled,
-* preprocessed via [enhance-css](https://github.com/GoalSmashers/enhance-css)
+* preprocessed via [enhance-css](https://github.com/jakubpawlowicz/enhance-css)
   (inline images, asset hosts, etc),
 * and packaged (and optionally precompressed).
 
@@ -42,7 +42,7 @@ npm install -g assets-packager
 OK. Here are commands to run
 
 ```bash
-git clone git@github.com:GoalSmashers/assets-packager.git
+git clone git@github.com:jakubpawlowicz/assets-packager.git
 cd assets-packager/examples
 assetspkg -c assets.yml -g
 ```
@@ -54,7 +54,7 @@ That's it!
 
 You should have just witnessed it by yourself. :-)
 
-We use it as a part of build process for [GoalSmashers.com](http://goalsmashers.com)
+It is used as a part of build process for [GoalSmashers.com](http://goalsmashers.com)
 and it takes around 10 seconds to buld 40 CSS and 20 JavaScript bundles from hundreds of assets.
 
 So yes, it is fast!
@@ -138,4 +138,4 @@ Open an issue. Or better: fork the project, add the feature
 
 ## License
 
-Assets-packager is released under the [MIT License](https://github.com/GoalSmashers/assets-packager/blob/master/LICENSE).
+Assets-packager is released under the [MIT License](https://github.com/jakubpawlowicz/assets-packager/blob/master/LICENSE).

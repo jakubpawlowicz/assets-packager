@@ -1,10 +1,10 @@
-[1.1.0 / 2014-03-16](https://github.com/GoalSmashers/assets-packager/compare/v1.0.0...v1.1.0)
+[1.1.0 / 2014-03-16](https://github.com/jakubpawlowicz/assets-packager/compare/v1.0.0...v1.1.0)
 ==================
 
 * Adds `--css-embed-all` switch to trigger embedding of all resources by enhance-css.
 * Updates enhance-css dependency to 1.1.x.
 
-[1.0.0 / 2014-03-10](https://github.com/GoalSmashers/assets-packager/compare/v0.9.0...v1.0.0)
+[1.0.0 / 2014-03-10](https://github.com/jakubpawlowicz/assets-packager/compare/v0.9.0...v1.0.0)
 ==================
 
 * Adds customizable paths to bundled files.
@@ -13,10 +13,10 @@
 * Updates assets-expander dependency to 1.0.x.
 * Updates clean-css dependency to 2.1.x.
 * Updates enhance-css dependency to 1.0.x.
-* Fixes [#14](https://github.com/GoalSmashers/assets-packager/issues/14) - replaces optimist with commander.
-* Fixes [#15](https://github.com/GoalSmashers/assets-packager/issues/15) - upgrades uglify-js to 2.4.x.
-* Fixes [#17](https://github.com/GoalSmashers/assets-packager/issues/17) - drops support for node.js 0.6.
-* Fixes [#19](https://github.com/GoalSmashers/assets-packager/issues/19) - fixes Windows support.
+* Fixes [#14](https://github.com/jakubpawlowicz/assets-packager/issues/14) - replaces optimist with commander.
+* Fixes [#15](https://github.com/jakubpawlowicz/assets-packager/issues/15) - upgrades uglify-js to 2.4.x.
+* Fixes [#17](https://github.com/jakubpawlowicz/assets-packager/issues/17) - drops support for node.js 0.6.
+* Fixes [#19](https://github.com/jakubpawlowicz/assets-packager/issues/19) - fixes Windows support.
 
 0.9.0 / 2013-06-04
 ==================
