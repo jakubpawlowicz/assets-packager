@@ -2,6 +2,7 @@
 ==================
 
 * Bumps async dependency to 0.9.x.
+* Bumps commander dependency to 2.3.x.
 
 [1.1.0 / 2014-03-16](https://github.com/jakubpawlowicz/assets-packager/compare/v1.0.0...v1.1.0)
 ==================
