@@ -1,7 +1,7 @@
-[![NPM version](https://badge.fury.io/js/assets-packager.png)](https://badge.fury.io/js/assets-packager)
-[![Build Status](https://secure.travis-ci.org/jakubpawlowicz/assets-packager.png)](https://travis-ci.org/jakubpawlowicz/assets-packager)
-[![Dependency Status](https://david-dm.org/jakubpawlowicz/assets-packager.png?theme=shields.io)](https://david-dm.org/jakubpawlowicz/assets-packager)
-[![devDependency Status](https://david-dm.org/jakubpawlowicz/assets-packager/dev-status.png?theme=shields.io)](https://david-dm.org/jakubpawlowicz/assets-packager#info=devDependencies)
+[![NPM version](https://badge.fury.io/js/assets-packager.svg)](https://badge.fury.io/js/assets-packager)
+[![Build Status](https://secure.travis-ci.org/jakubpawlowicz/assets-packager.svg)](https://travis-ci.org/jakubpawlowicz/assets-packager)
+[![Dependency Status](https://david-dm.org/jakubpawlowicz/assets-packager.svg)](https://david-dm.org/jakubpawlowicz/assets-packager)
+[![devDependency Status](https://david-dm.org/jakubpawlowicz/assets-packager/dev-status.svg)](https://david-dm.org/jakubpawlowicz/assets-packager#info=devDependencies)
 
 ## What is assets-packager?
 
